@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.github.kydzombie.link.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "LinkChestMixin"
+  ],
+  "server": [
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

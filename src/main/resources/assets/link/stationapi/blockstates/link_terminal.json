@@ -1,0 +1,25 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "link:block/link_terminal"
+    },
+    "facing=east": {
+      "model": "link:block/link_terminal",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "link:block/link_terminal",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "link:block/link_terminal",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "link:block/link_terminal"
+    },
+    "facing=down": {
+      "model": "link:block/link_terminal"
+    }
+  }
+}

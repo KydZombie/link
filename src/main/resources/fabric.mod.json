@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "id": "examplemod",
+  "id": "link",
   "version": "${version}",
 
-  "name": "Example Mod",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "name": "Link",
+  "description": "Storage mod built around \"Links.\"",
   "authors": [
     "Me!"
   ],
@@ -14,28 +14,21 @@
   },
 
   "license": "CC0-1.0",
-  "icon": "assets/examplemod/icon.png",
+  "icon": "assets/link/icon.png",
 
   "environment": "*",
   "entrypoints": {
     "stationapi:event_bus": [
-      "net.glasslauncher.example.events.init.AchievementListener",
-      "net.glasslauncher.example.events.init.BlockListener",
-      "net.glasslauncher.example.events.init.ItemListener",
-      "net.glasslauncher.example.events.init.PlayerHandlerListener",
-      "net.glasslauncher.example.events.init.RecipeListener"
+      "com.github.kydzombie.link.Link"
     ],
     "stationapi:event_bus_client": [
-      "net.glasslauncher.example.events.init.KeyBindingListener",
-      "net.glasslauncher.example.events.init.TextureListener",
-      "net.glasslauncher.example.events.ingame.KeyPressedListener"
+      "com.github.kydzombie.link.LinkClient"
     ],
     "stationapi:event_bus_server": [
-      "net.glasslauncher.example.events.init.ServerInitListener"
     ]
   },
   "mixins": [
-    "examplemod.mixins.json"
+    "link.mixins.json"
   ],
 
   "depends": {

@@ -1,0 +1,17 @@
+{
+  "parent": "item/generated",
+  "overrides": [
+    {
+      "predicate": {
+        "link:linked": 0
+      },
+      "model": "link:item/link_card_unlinked"
+    },
+    {
+      "predicate": {
+        "link:linked": 1
+      },
+      "model": "link:item/link_card_linked"
+    }
+  ]
+}
