@@ -22,11 +22,14 @@ public class LinkCable extends TemplateBlockBase {
     public static final BooleanProperty UP = BooleanProperty.of("up");
     public static final BooleanProperty DOWN = BooleanProperty.of("down");
 
-    static final float MIN_SIZE = .25f;
-    static final float MAX_SIZE = .75f;
+    final float MIN_SIZE;
+    final float MAX_SIZE;
 
-    public LinkCable(Identifier identifier, Material material) {
+    public LinkCable(Identifier identifier, Material material, float minSize, float maxSize) {
         super(identifier, material);
+        MIN_SIZE = minSize;
+        MAX_SIZE = maxSize;
+
         this.setHardness(0.8f);
 
         setTranslationKey(identifier.toString());
@@ -37,6 +40,10 @@ public class LinkCable extends TemplateBlockBase {
                 .with(WEST, false)
                 .with(UP, false)
                 .with(DOWN, false));
+    }
+
+    public LinkCable(Identifier identifier, Material material) {
+        this(identifier, material, .25f, .75f);
     }
 
     @Override
@@ -104,12 +111,21 @@ public class LinkCable extends TemplateBlockBase {
         float maxZ = blockState.get(WEST) ? 1 : MAX_SIZE;
         float minZ = blockState.get(EAST) ? 0 : MIN_SIZE;
 
-        return Box.create(minX, minY, minZ, maxX, maxY, maxZ);
+        return Box.create(x + minX, y + minY, z + minZ, x + maxX, y + maxY, z + maxZ);
     }
 
     @Override
     public void updateBoundingBox(BlockView tileView, int x, int y, int z) {
+        BlockState blockState = ((BlockStateView)tileView).getBlockState(x, y, z);
 
+        float maxX = blockState.get(SOUTH) ? 1 : MAX_SIZE;
+        float minX = blockState.get(NORTH) ? 0 : MIN_SIZE;
+        float maxY = blockState.get(UP) ? 1 : MAX_SIZE;
+        float minY = blockState.get(DOWN) ? 0 : MIN_SIZE;
+        float maxZ = blockState.get(WEST) ? 1 : MAX_SIZE;
+        float minZ = blockState.get(EAST) ? 0 : MIN_SIZE;
+
+        setBoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
     }
 
     boolean checkConnection(Level level, int x, int y, int z, int side) {

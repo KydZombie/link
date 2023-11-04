@@ -23,6 +23,10 @@ public class LinkTerminalEntity extends TileEntityBase implements InventoryBase 
 
     public TileEntityBase[] getConnections() {
         var connections = new ArrayList<TileEntityBase>();
+        if (level == null) {
+            Link.LOGGER.error("LinkTerminalEntity has a null level");
+            return connections.toArray(TileEntityBase[]::new);
+        }
         for (ItemInstance itemInstance : inventory) {
             if (itemInstance == null || itemInstance.getType() != Link.LINK_CARD) continue;
             var nbt = itemInstance.getStationNBT();
