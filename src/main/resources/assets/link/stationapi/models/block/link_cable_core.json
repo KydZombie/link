@@ -1,0 +1,7 @@
+{
+  "parent": "link:block/base_cable_core",
+  "textures": {
+    "0": "link:block/link_cable",
+    "particle": "link:block/link_cable"
+  }
+}

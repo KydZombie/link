@@ -1,16 +1,17 @@
 package com.github.kydzombie.link.block;
 
 import com.github.kydzombie.link.Link;
+import com.github.kydzombie.link.gui.LinkTerminalStorage;
 import net.minecraft.block.BlockBase;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Item;
-import net.minecraft.entity.Living;
 import net.minecraft.entity.player.PlayerBase;
 import net.minecraft.item.ItemInstance;
 import net.minecraft.level.Level;
 import net.minecraft.tileentity.TileEntityBase;
 import net.modificationstation.stationapi.api.block.BlockState;
 import net.modificationstation.stationapi.api.gui.screen.container.GuiHelper;
+import net.modificationstation.stationapi.api.item.ItemPlacementContext;
 import net.modificationstation.stationapi.api.registry.Identifier;
 import net.modificationstation.stationapi.api.state.StateManager;
 import net.modificationstation.stationapi.api.state.property.EnumProperty;
@@ -19,14 +20,14 @@ import net.modificationstation.stationapi.api.util.math.Direction;
 
 import java.util.Random;
 
-public class LinkTerminal extends TemplateBlockWithEntity {
+public class LinkTerminal extends TemplateBlockWithEntity implements HasLinkConnection {
     private final Random rand = new Random();
     public static final EnumProperty<Direction> FACING_PROPERTY = EnumProperty.of("facing", Direction.class);
     public LinkTerminal(Identifier identifier, Material material) {
         super(identifier, material);
         setTranslationKey(identifier);
         setDefaultState(getStateManager().getDefaultState().with(FACING_PROPERTY, Direction.NORTH));
-        setHardness(10f);
+        setHardness(5f);
     }
 
     @Override
@@ -35,9 +36,9 @@ public class LinkTerminal extends TemplateBlockWithEntity {
     }
 
     @Override
-    public void afterPlaced(Level level, int x, int y, int z, Living living) {
-        var direction = Direction.getEntityFacingOrder(living)[0].getOpposite();
-        level.setBlockState(x, y, z, getDefaultState().with(FACING_PROPERTY, direction));
+    public BlockState getPlacementState(ItemPlacementContext context) {
+        var direction = context.getPlayerLookDirection().getOpposite();
+        return getDefaultState().with(FACING_PROPERTY, direction);
     }
 
     @Override
@@ -69,6 +70,11 @@ public class LinkTerminal extends TemplateBlockWithEntity {
             }
         }
         super.onBlockRemoved(level, x, y, z);
+    }
+
+    @Override
+    public boolean canConnectLinkCable(Level level, int x, int y, int z, Direction side) {
+        return level.getBlockState(x, y, z).get(FACING_PROPERTY) != side;
     }
 
     @Override

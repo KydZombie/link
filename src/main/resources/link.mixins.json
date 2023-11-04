@@ -4,7 +4,8 @@
   "package": "com.github.kydzombie.link.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "LinkChestMixin"
+    "LinkChestMixin",
+    "LinkDoubleChestMixin"
   ],
   "server": [
   ],

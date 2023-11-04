@@ -1,5 +1,7 @@
-package com.github.kydzombie.link.block;
+package com.github.kydzombie.link.gui;
 
+import com.github.kydzombie.link.block.HasLinkInfo;
+import com.github.kydzombie.link.block.LinkTerminalEntity;
 import com.github.kydzombie.link.slot.LinkCardSlot;
 import com.github.kydzombie.link.util.Vector2i;
 import net.minecraft.client.gui.screen.container.ContainerBase;
@@ -16,7 +18,7 @@ public class LinkTerminalGui extends ContainerBase {
     private final PlayerBase player;
     private final LinkTerminalEntity entity;
 
-    private static final Vector2i CORNER_OFFSET = new Vector2i(7, 7 + 12);
+    private static final Vector2i CORNER_OFFSET = new Vector2i(7, 7 + 20);
 
     boolean linkCardsMenuOpen = false;
 
@@ -28,8 +30,8 @@ public class LinkTerminalGui extends ContainerBase {
     private static final Rectangle CLOSE_CARDS_ARROW = new Rectangle(246, 128, 10, 35);
     private static final int SELECTED_ARROW_OFFSET = 35;
 
-    private static final int BUTTON_SIZE = 22;
-    private static final int BUTTON_MARGIN = 7;
+    public static final int BUTTON_SIZE = 22;
+    private static final int BUTTON_MARGIN = 10;
 
     private long lastFrameTime = System.currentTimeMillis();
     private float deltaTime;
@@ -87,6 +89,23 @@ public class LinkTerminalGui extends ContainerBase {
     protected void renderForeground() {
         textManager.drawText(entity.getContainerName(), 8, 6, 4210752);
         textManager.drawText(player.inventory.getContainerName(), 8, this.containerHeight - 96 + 2, 4210752);
+
+        int renderX = (width - containerWidth) / 2;
+        int renderY = (height - containerHeight) / 2;
+
+        int linkCardsMenuOffset = Math.round(LINK_CARDS_MENU.width * (animationTimer / ANIMATION_TIME));
+
+        // Link Buttons
+        int maxPerRow = (containerWidth - CORNER_OFFSET.x() - linkCardsMenuOffset) / (BUTTON_SIZE + BUTTON_MARGIN);
+        TileEntityBase[] connections = entity.getConnections();
+        for (int i = 0; i < connections.length; i++) {
+            TileEntityBase connection = connections[i];
+            if (connection instanceof HasLinkInfo linkInfo) {
+                int buttonX = CORNER_OFFSET.x() + ((i % maxPerRow) * (BUTTON_SIZE + BUTTON_MARGIN));
+                int buttonY = CORNER_OFFSET.y() + ((i / maxPerRow) * (BUTTON_SIZE + BUTTON_MARGIN));
+                drawTextWithShadowCentred(textManager, linkInfo.getLinkName(), buttonX + (BUTTON_SIZE / 2), buttonY - 9, Integer.MAX_VALUE);
+            }
+        }
     }
 
     @Override
@@ -127,14 +146,16 @@ public class LinkTerminalGui extends ContainerBase {
             if (connection instanceof HasLinkInfo linkInfo) {
                 int buttonX = renderX + CORNER_OFFSET.x() + ((i % maxPerRow) * (BUTTON_SIZE + BUTTON_MARGIN));
                 int buttonY = renderY + CORNER_OFFSET.y() + ((i / maxPerRow) * (BUTTON_SIZE + BUTTON_MARGIN));
-                var coordinates = linkInfo.getButtonCoordinates(mouseX > buttonX && mouseX < buttonX + BUTTON_SIZE && mouseY > buttonY && mouseY < buttonY + BUTTON_SIZE);
-                blit(buttonX, buttonY, coordinates.x(), coordinates.y(), BUTTON_SIZE, BUTTON_SIZE);
+                var selected = mouseX > buttonX && mouseX < buttonX + BUTTON_SIZE &&
+                        mouseY > buttonY && mouseY < buttonY + BUTTON_SIZE;
+                linkInfo.renderLinkButton(buttonX, buttonY, selected, this);
             }
         }
     }
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int k) {
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) {
+        System.out.println("mouseButton = " + mouseButton);
         int renderX = (width - containerWidth) / 2;
         int renderY = (height - containerHeight) / 2;
         int linkCardsMenuOffset = Math.round(LINK_CARDS_MENU.width * (animationTimer / ANIMATION_TIME));
@@ -153,11 +174,15 @@ public class LinkTerminalGui extends ContainerBase {
                 int buttonX = renderX + CORNER_OFFSET.x() + ((i % maxPerRow) * (BUTTON_SIZE + BUTTON_MARGIN));
                 int buttonY = renderY + CORNER_OFFSET.y() + ((i / maxPerRow) * (BUTTON_SIZE + BUTTON_MARGIN));
                 if (mouseX > buttonX && mouseX < buttonX + BUTTON_SIZE && mouseY > buttonY && mouseY < buttonY + BUTTON_SIZE) {
-                    linkInfo.openLinkMenu(player);
+                    if (mouseButton == 0) {
+                        linkInfo.openLinkMenu(player);
+                    } else if (mouseButton == 1) {
+                        // TODO Add name edit menu
+                    }
                 }
             }
         }
 
-        super.mouseClicked(mouseX, mouseY, k);
+        super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 }

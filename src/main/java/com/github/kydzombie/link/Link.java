@@ -1,5 +1,7 @@
 package com.github.kydzombie.link;
 
+import com.github.kydzombie.link.block.LinkCable;
+import com.github.kydzombie.link.block.LinkConnector;
 import com.github.kydzombie.link.block.LinkTerminal;
 import com.github.kydzombie.link.block.LinkTerminalEntity;
 import com.github.kydzombie.link.item.LinkCard;
@@ -33,10 +35,14 @@ public class Link {
     }
 
     public static BlockBase LINK_TERMINAL;
+    public static BlockBase LINK_CABLE;
+    public static LinkConnector LINK_CONNECTOR;
 
     @EventListener
     private void registerBlocks(BlockRegistryEvent event) {
         LINK_TERMINAL = new LinkTerminal(MOD_ID.id("link_terminal"), Material.METAL);
+        LINK_CABLE = new LinkCable(MOD_ID.id("link_cable"), Material.METAL);
+        LINK_CONNECTOR = new LinkConnector(MOD_ID.id("link_connector"), Material.METAL);
     }
 
     @EventListener

@@ -4,7 +4,6 @@ import com.github.kydzombie.link.block.HasLinkInfo;
 import net.minecraft.entity.player.PlayerBase;
 import net.minecraft.item.ItemInstance;
 import net.minecraft.level.Level;
-import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.io.CompoundTag;
 import net.modificationstation.stationapi.api.client.gui.CustomTooltipProvider;
 import net.modificationstation.stationapi.api.registry.Identifier;
@@ -29,7 +28,7 @@ public class LinkCard extends TemplateItemBase implements CustomTooltipProvider 
                 pos.put("z", entity.z);
                 itemInstance.getStationNBT().put("pos", pos);
                 itemInstance.getStationNBT().put("linked", true);
-                itemInstance.getStationNBT().put("entity_name", info.getName());
+                itemInstance.getStationNBT().put("entity_name", info.getLinkName());
                 return true;
             }
         }

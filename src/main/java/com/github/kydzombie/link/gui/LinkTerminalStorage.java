@@ -1,5 +1,6 @@
-package com.github.kydzombie.link.block;
+package com.github.kydzombie.link.gui;
 
+import com.github.kydzombie.link.block.LinkTerminalEntity;
 import com.github.kydzombie.link.slot.LinkCardSlot;
 import net.minecraft.container.ContainerBase;
 import net.minecraft.container.slot.Slot;

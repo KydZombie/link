@@ -1,3 +1,5 @@
 item.link_card.name=Link Card
 
 tile.link_terminal.name=Link Terminal
+tile.link_cable.name=Link Cable
+tile.link_connector.name=Link Connector
