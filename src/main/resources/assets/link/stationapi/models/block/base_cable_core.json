@@ -1,5 +1,5 @@
 {
-  "parent": "block/block",
+  "parent": "block/legacy/block",
   "elements": [
     {
       "from": [5, 5, 5],

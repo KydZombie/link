@@ -25,10 +25,10 @@ public class LinkCable extends TemplateBlockBase {
     final float MIN_SIZE;
     final float MAX_SIZE;
 
-    public LinkCable(Identifier identifier, Material material, float minSize, float maxSize) {
+    public LinkCable(Identifier identifier, Material material, float cableWidth) {
         super(identifier, material);
-        MIN_SIZE = minSize;
-        MAX_SIZE = maxSize;
+        MIN_SIZE = .5f - (cableWidth / 2);
+        MAX_SIZE = .5f + (cableWidth / 2);
 
         this.setHardness(0.8f);
 
@@ -43,7 +43,7 @@ public class LinkCable extends TemplateBlockBase {
     }
 
     public LinkCable(Identifier identifier, Material material) {
-        this(identifier, material, .25f, .75f);
+        this(identifier, material, .4f);
     }
 
     @Override
@@ -100,10 +100,7 @@ public class LinkCable extends TemplateBlockBase {
         return Box.create(x, y, z, x + 1, y + 1, z + 1);
     }
 
-    @Override
-    public Box getOutlineShape(Level level, int x, int y, int z) {
-        BlockState blockState = level.getBlockState(x, y, z);
-
+    protected Box getOutline(BlockState blockState, int x, int y, int z) {
         float maxX = blockState.get(SOUTH) ? 1 : MAX_SIZE;
         float minX = blockState.get(NORTH) ? 0 : MIN_SIZE;
         float maxY = blockState.get(UP) ? 1 : MAX_SIZE;
@@ -115,17 +112,8 @@ public class LinkCable extends TemplateBlockBase {
     }
 
     @Override
-    public void updateBoundingBox(BlockView tileView, int x, int y, int z) {
-        BlockState blockState = ((BlockStateView)tileView).getBlockState(x, y, z);
-
-        float maxX = blockState.get(SOUTH) ? 1 : MAX_SIZE;
-        float minX = blockState.get(NORTH) ? 0 : MIN_SIZE;
-        float maxY = blockState.get(UP) ? 1 : MAX_SIZE;
-        float minY = blockState.get(DOWN) ? 0 : MIN_SIZE;
-        float maxZ = blockState.get(WEST) ? 1 : MAX_SIZE;
-        float minZ = blockState.get(EAST) ? 0 : MIN_SIZE;
-
-        setBoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
+    public Box getOutlineShape(Level level, int x, int y, int z) {
+        return getOutline(level.getBlockState(x, y, z), x, y, z);
     }
 
     boolean checkConnection(Level level, int x, int y, int z, int side) {

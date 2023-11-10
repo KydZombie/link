@@ -1,6 +1,6 @@
 {
 	"credit": "Made with Blockbench",
-	"parent": "block/block",
+	"parent": "block/legacy/block",
 	"texture_size": [32, 32],
 	"textures": {
 		"0": "link:block/link_connector",
