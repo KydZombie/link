@@ -1,6 +1,7 @@
 package com.github.kydzombie.link.mixin;
 
 import com.github.kydzombie.link.Link;
+import com.github.kydzombie.link.block.CanFindDoubleChest;
 import com.github.kydzombie.link.gui.AlternateChestStorage;
 import com.github.kydzombie.link.block.HasLinkInfo;
 import net.minecraft.entity.player.PlayerBase;
@@ -21,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Random;
 
 @Mixin(TileEntityChest.class)
-public abstract class LinkChestEntityMixin extends TileEntityBase implements HasLinkInfo {
+public abstract class LinkChestEntityMixin extends TileEntityBase implements HasLinkInfo, CanFindDoubleChest {
     @Unique
     private String linkName = "Chest";
 
@@ -35,8 +36,8 @@ public abstract class LinkChestEntityMixin extends TileEntityBase implements Has
         }
     }
 
-    @Unique
-    private InventoryBase findInventory() {;
+    @Override
+    public InventoryBase findInventory() {;
         var id = level.getTileId(x, y, z);
 
         InventoryBase chestEntity = (InventoryBase) level.getTileEntity(x, y, z);

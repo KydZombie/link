@@ -1,5 +1,6 @@
 package com.github.kydzombie.link.gui;
 
+import com.github.kydzombie.link.LinkClient;
 import com.github.kydzombie.link.block.LinkTerminalEntity;
 import com.github.kydzombie.link.packet.OpenLinkedStoragePacket;
 import com.github.kydzombie.link.slot.LinkCardSlot;
@@ -180,7 +181,7 @@ public class LinkTerminalGui extends ContainerBase {
                 int buttonY = renderY + CORNER_OFFSET.y() + ((i / maxPerRow) * (BUTTON_SIZE + BUTTON_MARGIN));
                 if (mouseX > buttonX && mouseX < buttonX + BUTTON_SIZE && mouseY > buttonY && mouseY < buttonY + BUTTON_SIZE) {
                     if (mouseButton == 0) {
-                        System.out.println("Hello");
+                        LinkClient.currentlySelectedColor = connection.color();
                         PacketHelper.send(new OpenLinkedStoragePacket(i, false));
                     } else if (mouseButton == 1) {
 //                        PacketHelper.send(new OpenLinkedStoragePacket(entity.x, entity.y, entity.z, i, true));

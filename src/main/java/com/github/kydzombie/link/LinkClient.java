@@ -19,6 +19,7 @@ import net.modificationstation.stationapi.api.StationAPI;
 import net.modificationstation.stationapi.api.client.event.render.model.ItemModelPredicateProviderRegistryEvent;
 import net.modificationstation.stationapi.api.event.mod.PostInitEvent;
 import net.modificationstation.stationapi.api.event.registry.GuiHandlerRegistryEvent;
+import org.lwjgl.util.Color;
 import uk.co.benjiweber.expressions.tuple.BiTuple;
 
 import java.util.function.Supplier;
@@ -27,6 +28,7 @@ import static com.github.kydzombie.link.Link.MOD_ID;
 
 @Environment(EnvType.CLIENT)
 public class LinkClient {
+    public static Color currentlySelectedColor = (Color) Color.WHITE;
     @EventListener
     private void registerItemModelPredicates(ItemModelPredicateProviderRegistryEvent event) {
         event.registry.register(Link.LINK_CARD, MOD_ID.id("linked"),
