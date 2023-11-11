@@ -1,6 +1,7 @@
 package com.github.kydzombie.link.block;
 
 import com.github.kydzombie.link.Link;
+import com.github.kydzombie.link.util.LinkConnectionInfo;
 import net.minecraft.block.BlockBase;
 import net.minecraft.entity.Living;
 import net.minecraft.entity.player.PlayerBase;
@@ -13,6 +14,7 @@ import net.minecraft.util.io.ListTag;
 import net.modificationstation.stationapi.api.util.math.Vec3i;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class LinkTerminalEntity extends TileEntityBase implements InventoryBase {
     private ItemInstance[] inventory = new ItemInstance[6];
@@ -21,11 +23,17 @@ public class LinkTerminalEntity extends TileEntityBase implements InventoryBase 
 
     }
 
-    public TileEntityBase[] getConnections() {
+    public LinkConnectionInfo[] getConnections() {
+        return Arrays.stream(getTileEntities()).map(tileEntity ->
+                ((HasLinkInfo)tileEntity).getLinkConnectionInfo()
+        ).toArray(LinkConnectionInfo[]::new);
+    }
+
+    public <T extends TileEntityBase & HasLinkInfo> T[] getTileEntities() {
         var connections = new ArrayList<TileEntityBase>();
         if (level == null) {
             Link.LOGGER.error("LinkTerminalEntity has a null level");
-            return connections.toArray(TileEntityBase[]::new);
+            return (T[]) new Object[]{};
         }
         for (ItemInstance itemInstance : inventory) {
             if (itemInstance == null || itemInstance.getType() != Link.LINK_CARD) continue;
@@ -94,7 +102,7 @@ public class LinkTerminalEntity extends TileEntityBase implements InventoryBase 
             connections.add(entity);
         }
 
-        return connections.toArray(TileEntityBase[]::new);
+        return (T[]) connections.toArray(TileEntityBase[]::new);
     }
 
     @Override

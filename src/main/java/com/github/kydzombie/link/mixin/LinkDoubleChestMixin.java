@@ -7,6 +7,7 @@ import net.minecraft.entity.player.PlayerBase;
 import net.minecraft.inventory.DoubleChest;
 import net.minecraft.inventory.InventoryBase;
 import net.modificationstation.stationapi.api.gui.screen.container.GuiHelper;
+import org.lwjgl.util.Color;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
@@ -22,6 +23,16 @@ public class LinkDoubleChestMixin implements HasLinkInfo {
     @Override
     public void setLinkName(String name) {
         ((HasLinkInfo)left).setLinkName(name);
+    }
+
+    @Override
+    public Color getColor() {
+        return ((HasLinkInfo)left).getColor();
+    }
+
+    @Override
+    public void setColor(Color color) {
+        ((HasLinkInfo)left).setColor(color);
     }
 
     @Override

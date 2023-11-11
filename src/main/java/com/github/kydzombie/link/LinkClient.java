@@ -3,6 +3,10 @@ package com.github.kydzombie.link;
 import com.github.kydzombie.link.gui.AlternateChestGui;
 import com.github.kydzombie.link.block.LinkTerminalEntity;
 import com.github.kydzombie.link.gui.LinkTerminalGui;
+import com.github.kydzombie.link.registry.LinkIcon;
+import com.github.kydzombie.link.registry.LinkIconRegistry;
+import com.github.kydzombie.link.registry.LinkIconRegistryEvent;
+import com.github.kydzombie.link.util.Vector2i;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.mine_diver.unsafeevents.listener.EventListener;
@@ -10,7 +14,9 @@ import net.minecraft.client.gui.screen.ScreenBase;
 import net.minecraft.entity.player.PlayerBase;
 import net.minecraft.inventory.InventoryBase;
 import net.minecraft.tileentity.TileEntityChest;
+import net.modificationstation.stationapi.api.StationAPI;
 import net.modificationstation.stationapi.api.client.event.render.model.ItemModelPredicateProviderRegistryEvent;
+import net.modificationstation.stationapi.api.event.mod.PostInitEvent;
 import net.modificationstation.stationapi.api.event.registry.GuiHandlerRegistryEvent;
 import uk.co.benjiweber.expressions.tuple.BiTuple;
 
@@ -22,6 +28,18 @@ public class LinkClient {
     private void registerItemModelPredicates(ItemModelPredicateProviderRegistryEvent event) {
         event.registry.register(Link.LINK_CARD, MOD_ID.id("linked"),
                 (itemInstance, world, entity, seed) -> itemInstance.getStationNBT().getBoolean("linked") ? 1 : 0);
+    }
+
+    @EventListener
+    private void runEvent(PostInitEvent event) {
+        StationAPI.EVENT_BUS.post(new LinkIconRegistryEvent());
+    }
+
+    @EventListener
+    private void registerIcons(LinkIconRegistryEvent event) {
+        event.registerLinkIcon(MOD_ID.id("unknown"), LinkIconRegistry.UNKNOWN_ICON);
+        event.registerLinkIcon(MOD_ID.id("chest"), new LinkIcon(176, 66));
+        event.registerLinkIcon(MOD_ID.id("double_chest"), new LinkIcon(176, 88));
     }
 
     @EventListener

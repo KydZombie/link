@@ -22,13 +22,15 @@ public class LinkCard extends TemplateItemBase implements CustomTooltipProvider 
         if (player.method_1373())  {
             var entity = player.level.getTileEntity(x, y, z);
             if (entity instanceof HasLinkInfo info) {
-                var pos = new CompoundTag();
-                pos.put("x", entity.x);
-                pos.put("y", entity.y);
-                pos.put("z", entity.z);
-                itemInstance.getStationNBT().put("pos", pos);
-                itemInstance.getStationNBT().put("linked", true);
-                itemInstance.getStationNBT().put("entity_name", info.getLinkName());
+                if (!level.isServerSide) {
+                    var pos = new CompoundTag();
+                    pos.put("x", entity.x);
+                    pos.put("y", entity.y);
+                    pos.put("z", entity.z);
+                    itemInstance.getStationNBT().put("pos", pos);
+                    itemInstance.getStationNBT().put("linked", true);
+                    itemInstance.getStationNBT().put("entity_name", info.getLinkName());
+                }
                 return true;
             }
         }

@@ -6,12 +6,20 @@ import net.minecraft.container.ContainerBase;
 import net.minecraft.container.slot.Slot;
 import net.minecraft.entity.player.PlayerBase;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.tileentity.TileEntityBase;
 
 public class LinkTerminalStorage extends ContainerBase {
     private final PlayerBase player;
     private final LinkTerminalEntity entity;
 
     public static final int LINK_CARD_X = 149;
+
+    private TileEntityBase[] tileEntities;
+
+    public LinkTerminalStorage(PlayerBase player, LinkTerminalEntity entity, TileEntityBase[] tileEntities) {
+        this(player, entity);
+        this.tileEntities = tileEntities;
+    }
 
     public LinkTerminalStorage(PlayerBase player, LinkTerminalEntity entity) {
         this.player = player;
