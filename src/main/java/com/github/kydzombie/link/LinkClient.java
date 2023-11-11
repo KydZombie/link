@@ -1,12 +1,11 @@
 package com.github.kydzombie.link;
 
-import com.github.kydzombie.link.gui.AlternateChestGui;
 import com.github.kydzombie.link.block.LinkTerminalEntity;
+import com.github.kydzombie.link.gui.AlternateChestGui;
 import com.github.kydzombie.link.gui.LinkTerminalGui;
 import com.github.kydzombie.link.registry.LinkIcon;
 import com.github.kydzombie.link.registry.LinkIconRegistry;
 import com.github.kydzombie.link.registry.LinkIconRegistryEvent;
-import com.github.kydzombie.link.util.Vector2i;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.mine_diver.unsafeevents.listener.EventListener;
@@ -22,13 +21,12 @@ import net.modificationstation.stationapi.api.event.registry.GuiHandlerRegistryE
 import org.lwjgl.util.Color;
 import uk.co.benjiweber.expressions.tuple.BiTuple;
 
-import java.util.function.Supplier;
-
 import static com.github.kydzombie.link.Link.MOD_ID;
 
 @Environment(EnvType.CLIENT)
 public class LinkClient {
     public static Color currentlySelectedColor = (Color) Color.WHITE;
+
     @EventListener
     private void registerItemModelPredicates(ItemModelPredicateProviderRegistryEvent event) {
         event.registry.register(Link.LINK_CARD, MOD_ID.id("linked"),

@@ -58,8 +58,8 @@ public class LinkTerminalGui extends ContainerBase {
     }
 
     public void render(int mouseX, int mouseY, float f) {
-        this.mouseX = (float)mouseX;
-        this.mouseY = (float)mouseY;
+        this.mouseX = (float) mouseX;
+        this.mouseY = (float) mouseY;
 
         updateDeltaTime();
 

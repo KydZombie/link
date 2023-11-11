@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "id": "link",
   "version": "${version}",
-
   "name": "Link",
   "description": "Storage mod built around \"Links.\"",
   "authors": [
@@ -12,10 +11,8 @@
     "homepage": "https://glass-launcher.net/",
     "sources": "https://github.com/calmilamsy/BIN-fabric-example-mod"
   },
-
   "license": "MIT",
   "icon": "assets/link/icon.png",
-
   "environment": "*",
   "entrypoints": {
     "stationapi:event_bus": [
@@ -30,7 +27,6 @@
   "mixins": [
     "link.mixins.json"
   ],
-
   "depends": {
     "minecraft": "1.0.0-beta.7.3"
   }

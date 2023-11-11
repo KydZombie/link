@@ -5,7 +5,6 @@ import com.github.kydzombie.link.block.HasLinkInfo;
 import net.minecraft.client.gui.screen.container.ContainerBase;
 import net.minecraft.entity.player.PlayerBase;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.DoubleChest;
 import net.minecraft.inventory.InventoryBase;
 import org.lwjgl.opengl.GL11;
 
@@ -27,7 +26,7 @@ public class AlternateChestGui extends ContainerBase {
 
     @Override
     protected void renderForeground() {
-        textManager.drawText(((HasLinkInfo)inventory).getLinkName(), 8, 6, 4210752);
+        textManager.drawText(((HasLinkInfo) inventory).getLinkName(), 8, 6, 4210752);
         textManager.drawText(playerInventory.getContainerName(), 8, this.containerHeight - 96 + 2, 4210752);
     }
 

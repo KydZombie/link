@@ -29,7 +29,7 @@ public class LinkTerminalEntity extends TileEntityBase implements InventoryBase 
 
     public LinkConnectionInfo[] getConnections() {
         return Arrays.stream(getTileEntities()).map(tileEntity ->
-                ((HasLinkInfo)tileEntity).getLinkConnectionInfo()
+                ((HasLinkInfo) tileEntity).getLinkConnectionInfo()
         ).toArray(LinkConnectionInfo[]::new);
     }
 
@@ -104,9 +104,9 @@ public class LinkTerminalEntity extends TileEntityBase implements InventoryBase 
             var entity = Link.LINK_CONNECTOR.getConnectedTo(level, connectorPos.getX(), connectorPos.getY(), connectorPos.getZ());
             if (entity == null || connections.contains(entity)) continue;
             if (entity instanceof TileEntityChest chest) {
-                var found = ((CanFindDoubleChest)chest).findInventory();
+                var found = ((CanFindDoubleChest) chest).findInventory();
                 if (found instanceof DoubleChest doubleChest) {
-                    connections.add((TileEntityBase) ((DoubleChestAccessor)doubleChest).getLeft());
+                    connections.add((TileEntityBase) ((DoubleChestAccessor) doubleChest).getLeft());
                 } else {
                     connections.add(entity);
                 }
@@ -138,7 +138,7 @@ public class LinkTerminalEntity extends TileEntityBase implements InventoryBase 
             Link.accessing.keySet().stream().filter(player -> Link.accessing.get(player) == this).findFirst().ifPresent(player ->
                     PacketHelper.sendTo(
                             player, new LinkConnectionsPacket(
-                                    ((Stream<HasLinkInfo>)(Object) Arrays.stream(getTileEntities()))
+                                    ((Stream<HasLinkInfo>) (Object) Arrays.stream(getTileEntities()))
                                             .map(HasLinkInfo::getLinkConnectionInfo)
                                             .toArray(LinkConnectionInfo[]::new)
                             )
@@ -149,7 +149,7 @@ public class LinkTerminalEntity extends TileEntityBase implements InventoryBase 
             Link.accessing.keySet().stream().filter(player -> Link.accessing.get(player) == this).findFirst().ifPresent(player ->
                     PacketHelper.sendTo(
                             player, new LinkConnectionsPacket(
-                                    ((Stream<HasLinkInfo>)(Object) Arrays.stream(getTileEntities()))
+                                    ((Stream<HasLinkInfo>) (Object) Arrays.stream(getTileEntities()))
                                             .map(HasLinkInfo::getLinkConnectionInfo)
                                             .toArray(LinkConnectionInfo[]::new)
                             )
@@ -167,7 +167,7 @@ public class LinkTerminalEntity extends TileEntityBase implements InventoryBase 
         Link.accessing.keySet().stream().filter(player -> Link.accessing.get(player) == this).findFirst().ifPresent(player ->
                 PacketHelper.sendTo(
                         player, new LinkConnectionsPacket(
-                                ((Stream<HasLinkInfo>)(Object) Arrays.stream(getTileEntities()))
+                                ((Stream<HasLinkInfo>) (Object) Arrays.stream(getTileEntities()))
                                         .map(HasLinkInfo::getLinkConnectionInfo)
                                         .toArray(LinkConnectionInfo[]::new)
                         )

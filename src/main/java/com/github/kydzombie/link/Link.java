@@ -61,8 +61,45 @@ public class Link {
 
     @EventListener
     private void registerRecipes(RecipeRegisterEvent event) {
-        if (event.recipeId.equals(RecipeRegisterEvent.Vanilla.CRAFTING_SHAPELESS.type())) {
-            CraftingRegistry.addShapelessRecipe(new ItemInstance(LINK_CARD), new ItemInstance(LINK_CARD, 1, -1));
+        if (event.recipeId.equals(RecipeRegisterEvent.Vanilla.CRAFTING_SHAPED.type())) {
+            CraftingRegistry.addShapedRecipe(
+                    new ItemInstance(LINK_TERMINAL),
+                    "IDI",
+                    "DCD",
+                    "IDI",
+                    'I', new ItemInstance(ItemBase.ironIngot),
+                    'D', new ItemInstance(ItemBase.diamond),
+                    'C', new ItemInstance(BlockBase.CHEST)
+            );
+            CraftingRegistry.addShapedRecipe(
+                    new ItemInstance(LINK_CABLE, 6),
+                    "III",
+                    "GCG",
+                    "III",
+                    'I', new ItemInstance(ItemBase.ironIngot),
+                    'G', new ItemInstance(BlockBase.GLASS),
+                    'C', new ItemInstance(BlockBase.CHEST)
+            );
+            CraftingRegistry.addShapedRecipe(
+                    new ItemInstance(LINK_CONNECTOR),
+                    " D ",
+                    "CLC",
+                    " D ",
+                    'C', new ItemInstance(BlockBase.CHEST),
+                    'D', new ItemInstance(ItemBase.diamond),
+                    'L', new ItemInstance(LINK_CABLE)
+            );
+            CraftingRegistry.addShapedRecipe(
+                    new ItemInstance(LINK_CARD),
+                    " D ",
+                    "CMC",
+                    " D ",
+                    'C', new ItemInstance(LINK_CONNECTOR),
+                    'D', new ItemInstance(ItemBase.diamond),
+                    'M', new ItemInstance(ItemBase.map)
+            );
+        } else if (event.recipeId.equals(RecipeRegisterEvent.Vanilla.CRAFTING_SHAPELESS.type())) {
+//            CraftingRegistry.addShapelessRecipe(new ItemInstance(LINK_CARD), new ItemInstance(LINK_CARD, 1, -1));
         }
     }
 

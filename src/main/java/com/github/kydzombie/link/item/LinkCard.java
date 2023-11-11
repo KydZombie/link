@@ -19,7 +19,7 @@ public class LinkCard extends TemplateItemBase implements CustomTooltipProvider 
 
     @Override
     public boolean useOnTile(ItemInstance itemInstance, PlayerBase player, Level level, int x, int y, int z, int meta) {
-        if (player.method_1373())  {
+        if (player.method_1373()) {
             var entity = player.level.getTileEntity(x, y, z);
             if (entity instanceof HasLinkInfo info) {
                 if (!level.isServerSide) {
@@ -43,20 +43,20 @@ public class LinkCard extends TemplateItemBase implements CustomTooltipProvider 
             var nbt = itemInstance.getStationNBT();
             var pos = nbt.getCompoundTag("pos");
             if (nbt.getBoolean("linked")) {
-                return new String[] {
+                return new String[]{
                         originalTooltip,
                         nbt.getString("entity_name"),
                         "%d, %d, %d".formatted(pos.getInt("x"), pos.getInt("y"), pos.getInt("z"))
                 };
             } else {
-                return new String[] {
+                return new String[]{
                         originalTooltip,
                         Colours.RED + "Invalid Tile Entity!",
                         Colours.RED + "%d, %d, %d".formatted(pos.getInt("x"), pos.getInt("y"), pos.getInt("z"))
                 };
             }
         } else {
-            return new String[]{ originalTooltip };
+            return new String[]{originalTooltip};
         }
     }
 }

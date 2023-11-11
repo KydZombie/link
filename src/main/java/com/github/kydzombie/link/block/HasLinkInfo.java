@@ -8,9 +8,11 @@ import org.lwjgl.util.Color;
 
 public interface HasLinkInfo {
     String getLinkName();
+
     void setLinkName(String name);
 
     Color getColor();
+
     void setColor(Color color);
 
     void openLinkMenu(PlayerBase player);
@@ -18,6 +20,7 @@ public interface HasLinkInfo {
     default Identifier getLinkIconId() {
         return Link.MOD_ID.id("unknown");
     }
+
     default LinkConnectionInfo getLinkConnectionInfo() {
         return new LinkConnectionInfo(getLinkIconId(), getLinkName(), getColor());
     }

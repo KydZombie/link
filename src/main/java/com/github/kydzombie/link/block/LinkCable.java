@@ -2,7 +2,6 @@ package com.github.kydzombie.link.block;
 
 import net.minecraft.block.BlockBase;
 import net.minecraft.block.material.Material;
-import net.minecraft.level.BlockView;
 import net.minecraft.level.Level;
 import net.minecraft.util.maths.Box;
 import net.modificationstation.stationapi.api.block.BlockState;
@@ -12,7 +11,6 @@ import net.modificationstation.stationapi.api.state.StateManager;
 import net.modificationstation.stationapi.api.state.property.BooleanProperty;
 import net.modificationstation.stationapi.api.template.block.TemplateBlockBase;
 import net.modificationstation.stationapi.api.util.math.Direction;
-import net.modificationstation.stationapi.api.world.BlockStateView;
 
 public class LinkCable extends TemplateBlockBase {
     public static final BooleanProperty NORTH = BooleanProperty.of("north");
@@ -59,7 +57,7 @@ public class LinkCable extends TemplateBlockBase {
 
     @Override
     public void onAdjacentBlockUpdate(Level level, int x, int y, int z, int id) {
-        level.setBlockState(x, y, z,  level.getBlockState(x, y, z)
+        level.setBlockState(x, y, z, level.getBlockState(x, y, z)
                 .with(NORTH, checkConnection(level, x - 1, y, z, 5))
                 .with(SOUTH, checkConnection(level, x + 1, y, z, 4))
                 .with(EAST, checkConnection(level, x, y, z - 1, 3))

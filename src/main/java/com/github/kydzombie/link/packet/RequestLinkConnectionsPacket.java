@@ -30,7 +30,7 @@ public class RequestLinkConnectionsPacket extends AbstractPacket {
         var terminal = Link.accessing.get(player);
         PacketHelper.sendTo(
                 player, new LinkConnectionsPacket(
-                        ((Stream<HasLinkInfo>)(Object)Arrays.stream(terminal.getTileEntities()))
+                        ((Stream<HasLinkInfo>) (Object) Arrays.stream(terminal.getTileEntities()))
                                 .map(HasLinkInfo::getLinkConnectionInfo)
                                 .toArray(LinkConnectionInfo[]::new)
                 )

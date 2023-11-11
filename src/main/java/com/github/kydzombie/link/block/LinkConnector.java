@@ -2,7 +2,6 @@ package com.github.kydzombie.link.block;
 
 import net.minecraft.block.BlockBase;
 import net.minecraft.block.material.Material;
-import net.minecraft.level.BlockView;
 import net.minecraft.level.Level;
 import net.minecraft.tileentity.TileEntityBase;
 import net.minecraft.util.maths.Box;
@@ -12,10 +11,10 @@ import net.modificationstation.stationapi.api.registry.Identifier;
 import net.modificationstation.stationapi.api.state.StateManager;
 import net.modificationstation.stationapi.api.state.property.EnumProperty;
 import net.modificationstation.stationapi.api.util.math.Direction;
-import net.modificationstation.stationapi.api.world.BlockStateView;
 
 public class LinkConnector extends LinkCable {
     public static final EnumProperty<Direction> FACING_PROPERTY = EnumProperty.of("facing", Direction.class);
+
     public LinkConnector(Identifier identifier, Material material) {
         // TODO: Fix uneven border
         super(identifier, material, .5f);
@@ -31,7 +30,7 @@ public class LinkConnector extends LinkCable {
     }
 
     public TileEntityBase getConnectedTo(Level level, int x, int y, int z) {
-        return switch(level.getBlockState(x, y, z).get(FACING_PROPERTY)) {
+        return switch (level.getBlockState(x, y, z).get(FACING_PROPERTY)) {
             case UP -> level.getTileEntity(x, y + 1, z);
             case DOWN -> level.getTileEntity(x, y - 1, z);
             case EAST -> level.getTileEntity(x, y, z - 1);

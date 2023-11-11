@@ -2,8 +2,8 @@ package com.github.kydzombie.link.mixin;
 
 import com.github.kydzombie.link.Link;
 import com.github.kydzombie.link.block.CanFindDoubleChest;
-import com.github.kydzombie.link.gui.AlternateChestStorage;
 import com.github.kydzombie.link.block.HasLinkInfo;
+import com.github.kydzombie.link.gui.AlternateChestStorage;
 import net.minecraft.entity.player.PlayerBase;
 import net.minecraft.inventory.DoubleChest;
 import net.minecraft.inventory.InventoryBase;
@@ -37,29 +37,27 @@ public abstract class LinkChestEntityMixin extends TileEntityBase implements Has
     }
 
     @Override
-    public InventoryBase findInventory() {;
+    public InventoryBase findInventory() {
+        ;
         var id = level.getTileId(x, y, z);
 
         InventoryBase chestEntity = (InventoryBase) level.getTileEntity(x, y, z);
 
         if (level.getTileId(x - 1, y, z) == id) {
-            chestEntity = new DoubleChest("Large chest", (TileEntityChest)level.getTileEntity(x - 1, y, z), chestEntity);
+            chestEntity = new DoubleChest("Large chest", (TileEntityChest) level.getTileEntity(x - 1, y, z), chestEntity);
         } else if (level.getTileId(x + 1, y, z) == id) {
-            chestEntity = new DoubleChest("Large chest", chestEntity, (TileEntityChest)level.getTileEntity(x + 1, y, z));
+            chestEntity = new DoubleChest("Large chest", chestEntity, (TileEntityChest) level.getTileEntity(x + 1, y, z));
         } else if (level.getTileId(x, y, z - 1) == id) {
-            chestEntity = new DoubleChest("Large chest", (TileEntityChest)level.getTileEntity(x, y, z - 1), chestEntity);
+            chestEntity = new DoubleChest("Large chest", (TileEntityChest) level.getTileEntity(x, y, z - 1), chestEntity);
         } else if (level.getTileId(x, y, z + 1) == id) {
-            chestEntity = new DoubleChest("Large chest", chestEntity, (TileEntityChest)level.getTileEntity(x, y, z + 1));
+            chestEntity = new DoubleChest("Large chest", chestEntity, (TileEntityChest) level.getTileEntity(x, y, z + 1));
         }
-
-        System.out.println("Found: " + chestEntity.getInventorySize());
 
         return chestEntity;
     }
 
     @Override
     public void openLinkMenu(PlayerBase player) {
-        System.out.println("HELLO");
         var inventory = findInventory();
         if (inventory instanceof DoubleChest) {
             ((HasLinkInfo) inventory).openLinkMenu(player);

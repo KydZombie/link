@@ -1,8 +1,6 @@
 package com.github.kydzombie.link.packet;
 
 import com.github.kydzombie.link.Link;
-import com.github.kydzombie.link.block.HasLinkInfo;
-import com.github.kydzombie.link.block.LinkTerminalEntity;
 import net.minecraft.network.PacketHandler;
 import net.minecraft.packet.AbstractPacket;
 import net.modificationstation.stationapi.api.entity.player.PlayerHelper;
@@ -18,7 +16,6 @@ public class OpenLinkedStoragePacket extends AbstractPacket implements Identifia
     private boolean editMenu;
 
     public OpenLinkedStoragePacket() {
-        System.out.println("Hi from the funny constructor");
     }
 
     public OpenLinkedStoragePacket(int index, boolean editMenu) {

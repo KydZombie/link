@@ -1,13 +1,12 @@
 package com.github.kydzombie.link.mixin;
 
 import com.github.kydzombie.link.Link;
-import com.github.kydzombie.link.gui.AlternateChestStorage;
 import com.github.kydzombie.link.block.HasLinkInfo;
+import com.github.kydzombie.link.gui.AlternateChestStorage;
 import com.github.kydzombie.link.gui.FakeChestInventory;
 import net.minecraft.entity.player.PlayerBase;
 import net.minecraft.inventory.DoubleChest;
 import net.minecraft.inventory.InventoryBase;
-import net.minecraft.item.ItemInstance;
 import net.modificationstation.stationapi.api.gui.screen.container.GuiHelper;
 import org.lwjgl.util.Color;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,9 +17,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(DoubleChest.class)
 public abstract class LinkDoubleChestMixin implements HasLinkInfo, InventoryBase {
-    @Shadow private InventoryBase left;
+    @Shadow
+    private InventoryBase left;
 
-    @Shadow private InventoryBase right;
+    @Shadow
+    private InventoryBase right;
 
     @Inject(method = "<init>", at = @At("TAIL"))
     private void fixDoubleChest(String arg, InventoryBase arg2, InventoryBase par3, CallbackInfo ci) {
@@ -34,22 +35,22 @@ public abstract class LinkDoubleChestMixin implements HasLinkInfo, InventoryBase
 
     @Override
     public String getLinkName() {
-        return ((HasLinkInfo)left).getLinkName();
+        return ((HasLinkInfo) left).getLinkName();
     }
 
     @Override
     public void setLinkName(String name) {
-        ((HasLinkInfo)left).setLinkName(name);
+        ((HasLinkInfo) left).setLinkName(name);
     }
 
     @Override
     public Color getColor() {
-        return ((HasLinkInfo)left).getColor();
+        return ((HasLinkInfo) left).getColor();
     }
 
     @Override
     public void setColor(Color color) {
-        ((HasLinkInfo)left).setColor(color);
+        ((HasLinkInfo) left).setColor(color);
     }
 
     @Override

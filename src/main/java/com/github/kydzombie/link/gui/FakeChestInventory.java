@@ -8,6 +8,7 @@ import org.lwjgl.util.Color;
 
 public class FakeChestInventory implements HasLinkInfo, InventoryBase {
     ItemInstance[] inventory = new ItemInstance[27];
+
     @Override
     public String getLinkName() {
         return "Chest";

@@ -17,7 +17,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class LinkConnectionsPacket extends AbstractPacket implements IdentifiablePacket {
-    @NotNull private LinkConnectionInfo[] connections;
+    @NotNull
+    private LinkConnectionInfo[] connections;
 
     public LinkConnectionsPacket() {
         super();
@@ -66,7 +67,7 @@ public class LinkConnectionsPacket extends AbstractPacket implements Identifiabl
 
     @Override
     public void apply(PacketHandler arg) {
-        var screen = ((Minecraft)FabricLoader.getInstance().getGameInstance()).currentScreen;
+        var screen = ((Minecraft) FabricLoader.getInstance().getGameInstance()).currentScreen;
         if (screen instanceof LinkTerminalGui gui) {
             gui.updateConnections(connections);
         }

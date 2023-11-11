@@ -27,6 +27,7 @@ import java.util.Random;
 public class LinkTerminal extends TemplateBlockWithEntity implements HasLinkConnection {
     private final Random rand = new Random();
     public static final EnumProperty<Direction> FACING_PROPERTY = EnumProperty.of("facing", Direction.class);
+
     public LinkTerminal(Identifier identifier, Material material) {
         super(identifier, material);
         setTranslationKey(identifier);
@@ -73,18 +74,18 @@ public class LinkTerminal extends TemplateBlockWithEntity implements HasLinkConn
     public void onBlockRemoved(Level level, int x, int y, int z) {
         var entity = (LinkTerminalEntity) level.getTileEntity(x, y, z);
 
-        for(int var6 = 0; var6 < entity.getInventorySize(); ++var6) {
+        for (int var6 = 0; var6 < entity.getInventorySize(); ++var6) {
             ItemInstance itemInstance = entity.getInventoryItem(var6);
             if (itemInstance != null) {
                 float xOffset = rand.nextFloat() * 0.8F + 0.1F;
                 float yOffset = rand.nextFloat() * 0.8F + 0.1F;
                 float zOffset = rand.nextFloat() * 0.8F + 0.1F;
 
-                Item itemEntity = new Item(level, (float)x + xOffset, (float)y + yOffset, (float)z + zOffset, itemInstance);
+                Item itemEntity = new Item(level, (float) x + xOffset, (float) y + yOffset, (float) z + zOffset, itemInstance);
                 float velocityVariance = 0.05F;
-                itemEntity.velocityX = (float)rand.nextGaussian() * velocityVariance;
-                itemEntity.velocityY = (float)rand.nextGaussian() * velocityVariance + 0.2F;
-                itemEntity.velocityZ = (float)rand.nextGaussian() * velocityVariance;
+                itemEntity.velocityX = (float) rand.nextGaussian() * velocityVariance;
+                itemEntity.velocityY = (float) rand.nextGaussian() * velocityVariance + 0.2F;
+                itemEntity.velocityZ = (float) rand.nextGaussian() * velocityVariance;
                 level.spawnEntity(itemEntity);
             }
         }
