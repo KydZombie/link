@@ -1,12 +1,22 @@
 package com.github.kydzombie.link.gui;
 
+import com.github.kydzombie.link.block.HasLinkInfo;
 import com.github.kydzombie.link.block.LinkTerminalEntity;
+import com.github.kydzombie.link.packet.LinkConnectionsPacket;
+import com.github.kydzombie.link.packet.RequestLinkConnectionsPacket;
 import com.github.kydzombie.link.slot.LinkCardSlot;
+import com.github.kydzombie.link.util.LinkConnectionInfo;
 import net.minecraft.container.ContainerBase;
 import net.minecraft.container.slot.Slot;
 import net.minecraft.entity.player.PlayerBase;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.InventoryBase;
+import net.minecraft.item.ItemInstance;
 import net.minecraft.tileentity.TileEntityBase;
+import net.modificationstation.stationapi.api.packet.PacketHelper;
+
+import java.util.Arrays;
+import java.util.stream.Stream;
 
 public class LinkTerminalStorage extends ContainerBase {
     private final PlayerBase player;
@@ -46,6 +56,7 @@ public class LinkTerminalStorage extends ContainerBase {
             this.addSlot(new Slot(playerInventory, row, 8 + row * 18, 161 + offset));
         }
     }
+
     @Override
     public boolean canUse(PlayerBase arg) {
         return true;

@@ -3,17 +3,34 @@ package com.github.kydzombie.link.mixin;
 import com.github.kydzombie.link.Link;
 import com.github.kydzombie.link.gui.AlternateChestStorage;
 import com.github.kydzombie.link.block.HasLinkInfo;
+import com.github.kydzombie.link.gui.FakeChestInventory;
 import net.minecraft.entity.player.PlayerBase;
 import net.minecraft.inventory.DoubleChest;
 import net.minecraft.inventory.InventoryBase;
+import net.minecraft.item.ItemInstance;
 import net.modificationstation.stationapi.api.gui.screen.container.GuiHelper;
 import org.lwjgl.util.Color;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(DoubleChest.class)
-public class LinkDoubleChestMixin implements HasLinkInfo {
+public abstract class LinkDoubleChestMixin implements HasLinkInfo, InventoryBase {
     @Shadow private InventoryBase left;
+
+    @Shadow private InventoryBase right;
+
+    @Inject(method = "<init>", at = @At("TAIL"))
+    private void fixDoubleChest(String arg, InventoryBase arg2, InventoryBase par3, CallbackInfo ci) {
+        if (left == null) {
+            left = new FakeChestInventory();
+        }
+        if (right == null) {
+            right = new FakeChestInventory();
+        }
+    }
 
     @Override
     public String getLinkName() {
@@ -37,6 +54,6 @@ public class LinkDoubleChestMixin implements HasLinkInfo {
 
     @Override
     public void openLinkMenu(PlayerBase player) {
-        GuiHelper.openGUI(player, Link.MOD_ID.id("alternate_chest"), (InventoryBase) this, new AlternateChestStorage(player.inventory, (InventoryBase) this));
+        GuiHelper.openGUI(player, Link.MOD_ID.id("alternate_double_chest"), (InventoryBase) this, new AlternateChestStorage(player.inventory, (InventoryBase) this));
     }
 }

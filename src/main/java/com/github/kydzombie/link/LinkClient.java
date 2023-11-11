@@ -12,6 +12,7 @@ import net.fabricmc.api.Environment;
 import net.mine_diver.unsafeevents.listener.EventListener;
 import net.minecraft.client.gui.screen.ScreenBase;
 import net.minecraft.entity.player.PlayerBase;
+import net.minecraft.inventory.DoubleChest;
 import net.minecraft.inventory.InventoryBase;
 import net.minecraft.tileentity.TileEntityChest;
 import net.modificationstation.stationapi.api.StationAPI;
@@ -19,6 +20,8 @@ import net.modificationstation.stationapi.api.client.event.render.model.ItemMode
 import net.modificationstation.stationapi.api.event.mod.PostInitEvent;
 import net.modificationstation.stationapi.api.event.registry.GuiHandlerRegistryEvent;
 import uk.co.benjiweber.expressions.tuple.BiTuple;
+
+import java.util.function.Supplier;
 
 import static com.github.kydzombie.link.Link.MOD_ID;
 
@@ -46,6 +49,7 @@ public class LinkClient {
     private void registerGuiHandler(GuiHandlerRegistryEvent event) {
         event.registry.registerValueNoMessage(MOD_ID.id("link_terminal"), BiTuple.of(this::openLinkTerminal, LinkTerminalEntity::new));
         event.registry.registerValueNoMessage(MOD_ID.id("alternate_chest"), BiTuple.of(this::openAlternateChestGui, TileEntityChest::new));
+        event.registry.registerValueNoMessage(MOD_ID.id("alternate_double_chest"), BiTuple.of(this::openAlternateChestGui, () -> new DoubleChest(null, null, null)));
     }
 
     private ScreenBase openLinkTerminal(PlayerBase player, InventoryBase entity) {

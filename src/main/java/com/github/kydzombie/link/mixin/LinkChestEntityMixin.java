@@ -60,7 +60,11 @@ public abstract class LinkChestEntityMixin extends TileEntityBase implements Has
     public void openLinkMenu(PlayerBase player) {
         System.out.println("HELLO");
         var inventory = findInventory();
-        GuiHelper.openGUI(player, Link.MOD_ID.id("alternate_chest"), inventory, new AlternateChestStorage(player.inventory, inventory));
+        if (inventory instanceof DoubleChest) {
+            ((HasLinkInfo) inventory).openLinkMenu(player);
+        } else {
+            GuiHelper.openGUI(player, Link.MOD_ID.id("alternate_chest"), inventory, new AlternateChestStorage(player.inventory, inventory));
+        }
     }
 
     @Override
@@ -79,7 +83,8 @@ public abstract class LinkChestEntityMixin extends TileEntityBase implements Has
     @Override
     public Color getColor() {
         if (color == null) {
-            color = (Color) Color.WHITE;
+            var rand = new Random();
+            color = new Color(rand.nextInt(255), rand.nextInt(255), rand.nextInt(255));
         }
         return color;
     }

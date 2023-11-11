@@ -53,9 +53,6 @@ public class OpenLinkedStoragePacket extends AbstractPacket implements Identifia
         if (entities.length > index) {
             entities[index].openLinkMenu(player);
         }
-
-//        LinkIconRegistry.INSTANCE.get();
-//        linkInfo.openLinkMenu(player);
     }
 
     @Override
