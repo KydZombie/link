@@ -2,6 +2,7 @@ package com.github.kydzombie.link.block;
 
 import net.minecraft.block.BlockBase;
 import net.minecraft.block.material.Material;
+import net.minecraft.level.BlockView;
 import net.minecraft.level.Level;
 import net.minecraft.util.maths.Box;
 import net.modificationstation.stationapi.api.block.BlockState;
@@ -11,6 +12,7 @@ import net.modificationstation.stationapi.api.state.StateManager;
 import net.modificationstation.stationapi.api.state.property.BooleanProperty;
 import net.modificationstation.stationapi.api.template.block.TemplateBlockBase;
 import net.modificationstation.stationapi.api.util.math.Direction;
+import net.modificationstation.stationapi.api.world.BlockStateView;
 
 public class LinkCable extends TemplateBlockBase {
     public static final BooleanProperty NORTH = BooleanProperty.of("north");
@@ -95,7 +97,10 @@ public class LinkCable extends TemplateBlockBase {
 
     @Override
     public Box getCollisionShape(Level level, int x, int y, int z) {
-        return Box.create(x, y, z, x + 1, y + 1, z + 1);
+        if (level.getTileId(x, y, z) == id) {
+            return getOutline(level.getBlockState(x, y, z), x, y, z);
+        }
+        return super.getCollisionShape(level, x, y, z);
     }
 
     protected Box getOutline(BlockState blockState, int x, int y, int z) {
@@ -112,6 +117,21 @@ public class LinkCable extends TemplateBlockBase {
     @Override
     public Box getOutlineShape(Level level, int x, int y, int z) {
         return getOutline(level.getBlockState(x, y, z), x, y, z);
+    }
+
+    @Override
+    public void updateBoundingBox(BlockView arg, int x, int y, int z) {
+//        var box = getOutline(((BlockStateView) arg).getBlockState(x, y, z), x, y, z);
+        var blockState = ((BlockStateView) arg).getBlockState(x, y, z);
+
+        float maxX = blockState.get(SOUTH) ? 1 : MAX_SIZE;
+        float minX = blockState.get(NORTH) ? 0 : MIN_SIZE;
+        float maxY = blockState.get(UP) ? 1 : MAX_SIZE;
+        float minY = blockState.get(DOWN) ? 0 : MIN_SIZE;
+        float maxZ = blockState.get(WEST) ? 1 : MAX_SIZE;
+        float minZ = blockState.get(EAST) ? 0 : MIN_SIZE;
+
+        setBoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
     }
 
     boolean checkConnection(Level level, int x, int y, int z, int side) {

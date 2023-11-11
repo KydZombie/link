@@ -19,14 +19,6 @@ public class LinkConnector extends LinkCable {
         // TODO: Fix uneven border
         super(identifier, material, .5f);
         setDefaultState(getDefaultState().with(FACING_PROPERTY, Direction.NORTH));
-//        setDefaultState(getStateManager().getDefaultState()
-//                .with(NORTH, false)
-//                .with(SOUTH, false)
-//                .with(EAST, false)
-//                .with(WEST, false)
-//                .with(UP, false)
-//                .with(DOWN, false)
-//                .with(FACING_PROPERTY, Direction.NORTH));
     }
 
     public TileEntityBase getConnectedTo(Level level, int x, int y, int z) {
