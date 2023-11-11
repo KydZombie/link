@@ -8,11 +8,17 @@ import net.minecraft.inventory.DoubleChest;
 import net.minecraft.inventory.InventoryBase;
 import net.minecraft.tileentity.TileEntityBase;
 import net.minecraft.tileentity.TileEntityChest;
+import net.minecraft.util.io.CompoundTag;
 import net.modificationstation.stationapi.api.gui.screen.container.GuiHelper;
 import net.modificationstation.stationapi.api.registry.Identifier;
 import org.lwjgl.util.Color;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.Random;
 
 @Mixin(TileEntityChest.class)
 public abstract class LinkChestEntityMixin extends TileEntityBase implements HasLinkInfo {
@@ -68,15 +74,35 @@ public abstract class LinkChestEntityMixin extends TileEntityBase implements Has
     }
 
     @Unique
-    private Color color = (Color) Color.WHITE;
+    private Color color;
 
     @Override
     public Color getColor() {
+        if (color == null) {
+            color = (Color) Color.WHITE;
+        }
         return color;
     }
 
     @Override
     public void setColor(Color color) {
         this.color = color;
+    }
+
+    @Inject(method = "readIdentifyingData(Lnet/minecraft/util/io/CompoundTag;)V", at = @At("TAIL"))
+    private void injectRead(CompoundTag tag, CallbackInfo ci) {
+        var colorTag = tag.getCompoundTag("link:color");
+        if (colorTag == null) return;
+        this.color = new Color(colorTag.getByte("r"), colorTag.getByte("g"), colorTag.getByte("b"));
+    }
+
+    @Inject(method = "writeIdentifyingData(Lnet/minecraft/util/io/CompoundTag;)V", at = @At("TAIL"))
+    private void injectWrite(CompoundTag tag, CallbackInfo ci) {
+        var colorTag = new CompoundTag();
+        var color = getColor();
+        colorTag.put("r", color.getRedByte());
+        colorTag.put("g", color.getGreenByte());
+        colorTag.put("b", color.getBlueByte());
+        tag.put("link:color", colorTag);
     }
 }
