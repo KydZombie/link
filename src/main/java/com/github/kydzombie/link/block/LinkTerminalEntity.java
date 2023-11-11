@@ -1,18 +1,24 @@
 package com.github.kydzombie.link.block;
 
 import com.github.kydzombie.link.Link;
+import com.github.kydzombie.link.mixin.DoubleChestAccessor;
+import com.github.kydzombie.link.packet.LinkConnectionsPacket;
+import com.github.kydzombie.link.util.LinkConnectionInfo;
 import net.minecraft.block.BlockBase;
-import net.minecraft.entity.Living;
 import net.minecraft.entity.player.PlayerBase;
+import net.minecraft.inventory.DoubleChest;
 import net.minecraft.inventory.InventoryBase;
 import net.minecraft.item.ItemInstance;
-import net.minecraft.level.Level;
 import net.minecraft.tileentity.TileEntityBase;
+import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.io.CompoundTag;
 import net.minecraft.util.io.ListTag;
+import net.modificationstation.stationapi.api.packet.PacketHelper;
 import net.modificationstation.stationapi.api.util.math.Vec3i;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.stream.Stream;
 
 public class LinkTerminalEntity extends TileEntityBase implements InventoryBase {
     private ItemInstance[] inventory = new ItemInstance[6];
@@ -21,11 +27,17 @@ public class LinkTerminalEntity extends TileEntityBase implements InventoryBase 
 
     }
 
-    public TileEntityBase[] getConnections() {
+    public LinkConnectionInfo[] getConnections() {
+        return Arrays.stream(getTileEntities()).map(tileEntity ->
+                ((HasLinkInfo)tileEntity).getLinkConnectionInfo()
+        ).toArray(LinkConnectionInfo[]::new);
+    }
+
+    public <T extends TileEntityBase & HasLinkInfo> T[] getTileEntities() {
         var connections = new ArrayList<TileEntityBase>();
         if (level == null) {
             Link.LOGGER.error("LinkTerminalEntity has a null level");
-            return connections.toArray(TileEntityBase[]::new);
+            return (T[]) new Object[]{};
         }
         for (ItemInstance itemInstance : inventory) {
             if (itemInstance == null || itemInstance.getType() != Link.LINK_CARD) continue;
@@ -91,10 +103,20 @@ public class LinkTerminalEntity extends TileEntityBase implements InventoryBase 
         for (Vec3i connectorPos : connectors) {
             var entity = Link.LINK_CONNECTOR.getConnectedTo(level, connectorPos.getX(), connectorPos.getY(), connectorPos.getZ());
             if (entity == null || connections.contains(entity)) continue;
-            connections.add(entity);
+            if (entity instanceof TileEntityChest chest) {
+                var found = ((CanFindDoubleChest)chest).findInventory();
+                if (found instanceof DoubleChest doubleChest) {
+                    connections.add((TileEntityBase) ((DoubleChestAccessor)doubleChest).getLeft());
+                } else {
+                    connections.add(entity);
+                }
+            } else {
+                connections.add(entity);
+            }
+
         }
 
-        return connections.toArray(TileEntityBase[]::new);
+        return (T[]) connections.toArray(TileEntityBase[]::new);
     }
 
     @Override
@@ -113,8 +135,26 @@ public class LinkTerminalEntity extends TileEntityBase implements InventoryBase 
         var existingItem = getInventoryItem(i);
         if (existingItem != null) {
             inventory[i] = null;
+            Link.accessing.keySet().stream().filter(player -> Link.accessing.get(player) == this).findFirst().ifPresent(player ->
+                    PacketHelper.sendTo(
+                            player, new LinkConnectionsPacket(
+                                    ((Stream<HasLinkInfo>)(Object) Arrays.stream(getTileEntities()))
+                                            .map(HasLinkInfo::getLinkConnectionInfo)
+                                            .toArray(LinkConnectionInfo[]::new)
+                            )
+                    )
+            );
             return existingItem;
         } else {
+            Link.accessing.keySet().stream().filter(player -> Link.accessing.get(player) == this).findFirst().ifPresent(player ->
+                    PacketHelper.sendTo(
+                            player, new LinkConnectionsPacket(
+                                    ((Stream<HasLinkInfo>)(Object) Arrays.stream(getTileEntities()))
+                                            .map(HasLinkInfo::getLinkConnectionInfo)
+                                            .toArray(LinkConnectionInfo[]::new)
+                            )
+                    )
+            );
             return null;
         }
     }
@@ -123,6 +163,16 @@ public class LinkTerminalEntity extends TileEntityBase implements InventoryBase 
     public void setInventoryItem(int i, ItemInstance itemInstance) {
         if (i > inventory.length) return;
         inventory[i] = itemInstance;
+
+        Link.accessing.keySet().stream().filter(player -> Link.accessing.get(player) == this).findFirst().ifPresent(player ->
+                PacketHelper.sendTo(
+                        player, new LinkConnectionsPacket(
+                                ((Stream<HasLinkInfo>)(Object) Arrays.stream(getTileEntities()))
+                                        .map(HasLinkInfo::getLinkConnectionInfo)
+                                        .toArray(LinkConnectionInfo[]::new)
+                        )
+                )
+        );
     }
 
     @Override

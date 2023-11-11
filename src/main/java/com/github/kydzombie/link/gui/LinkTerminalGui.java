@@ -1,12 +1,14 @@
 package com.github.kydzombie.link.gui;
 
-import com.github.kydzombie.link.block.HasLinkInfo;
+import com.github.kydzombie.link.LinkClient;
 import com.github.kydzombie.link.block.LinkTerminalEntity;
+import com.github.kydzombie.link.packet.OpenLinkedStoragePacket;
 import com.github.kydzombie.link.slot.LinkCardSlot;
+import com.github.kydzombie.link.util.LinkConnectionInfo;
 import com.github.kydzombie.link.util.Vector2i;
 import net.minecraft.client.gui.screen.container.ContainerBase;
 import net.minecraft.entity.player.PlayerBase;
-import net.minecraft.tileentity.TileEntityBase;
+import net.modificationstation.stationapi.api.packet.PacketHelper;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -35,6 +37,7 @@ public class LinkTerminalGui extends ContainerBase {
 
     private long lastFrameTime = System.currentTimeMillis();
     private float deltaTime;
+    private LinkConnectionInfo[] connections = null;
 
     public LinkTerminalGui(PlayerBase player, LinkTerminalEntity entity) {
         super(new LinkTerminalStorage(player, entity));
@@ -42,6 +45,10 @@ public class LinkTerminalGui extends ContainerBase {
         this.entity = entity;
 
         containerHeight = 222;
+    }
+
+    public void updateConnections(LinkConnectionInfo[] newConnections) {
+        connections = newConnections;
     }
 
     private void updateDeltaTime() {
@@ -96,14 +103,14 @@ public class LinkTerminalGui extends ContainerBase {
         int linkCardsMenuOffset = Math.round(LINK_CARDS_MENU.width * (animationTimer / ANIMATION_TIME));
 
         // Link Buttons
-        int maxPerRow = (containerWidth - CORNER_OFFSET.x() - linkCardsMenuOffset) / (BUTTON_SIZE + BUTTON_MARGIN);
-        TileEntityBase[] connections = entity.getConnections();
-        for (int i = 0; i < connections.length; i++) {
-            TileEntityBase connection = connections[i];
-            if (connection instanceof HasLinkInfo linkInfo) {
+        if (connections != null) {
+            int maxPerRow = (containerWidth - CORNER_OFFSET.x() - linkCardsMenuOffset) / (BUTTON_SIZE + BUTTON_MARGIN);
+
+            for (int i = 0; i < connections.length; i++) {
+                LinkConnectionInfo connection = connections[i];
                 int buttonX = CORNER_OFFSET.x() + ((i % maxPerRow) * (BUTTON_SIZE + BUTTON_MARGIN));
                 int buttonY = CORNER_OFFSET.y() + ((i / maxPerRow) * (BUTTON_SIZE + BUTTON_MARGIN));
-                drawTextWithShadowCentred(textManager, linkInfo.getLinkName(), buttonX + (BUTTON_SIZE / 2), buttonY - 9, Integer.MAX_VALUE);
+                drawTextWithShadowCentred(textManager, connection.name(), buttonX + (BUTTON_SIZE / 2), buttonY - 9, Integer.MAX_VALUE);
             }
         }
     }
@@ -139,23 +146,22 @@ public class LinkTerminalGui extends ContainerBase {
         }
 
         // Link Buttons
-        int maxPerRow = (containerWidth - CORNER_OFFSET.x() - linkCardsMenuOffset) / (BUTTON_SIZE + BUTTON_MARGIN);
-        TileEntityBase[] connections = entity.getConnections();
-        for (int i = 0; i < connections.length; i++) {
-            TileEntityBase connection = connections[i];
-            if (connection instanceof HasLinkInfo linkInfo) {
+        if (connections != null) {
+            int maxPerRow = (containerWidth - CORNER_OFFSET.x() - linkCardsMenuOffset) / (BUTTON_SIZE + BUTTON_MARGIN);
+
+            for (int i = 0; i < connections.length; i++) {
+                LinkConnectionInfo connection = connections[i];
                 int buttonX = renderX + CORNER_OFFSET.x() + ((i % maxPerRow) * (BUTTON_SIZE + BUTTON_MARGIN));
                 int buttonY = renderY + CORNER_OFFSET.y() + ((i / maxPerRow) * (BUTTON_SIZE + BUTTON_MARGIN));
                 var selected = mouseX > buttonX && mouseX < buttonX + BUTTON_SIZE &&
                         mouseY > buttonY && mouseY < buttonY + BUTTON_SIZE;
-                linkInfo.renderLinkButton(buttonX, buttonY, selected, this);
+                connection.getLinkIcon().render(buttonX, buttonY, selected, connection.color(), this);
             }
         }
     }
 
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) {
-        System.out.println("mouseButton = " + mouseButton);
         int renderX = (width - containerWidth) / 2;
         int renderY = (height - containerHeight) / 2;
         int linkCardsMenuOffset = Math.round(LINK_CARDS_MENU.width * (animationTimer / ANIMATION_TIME));
@@ -166,17 +172,19 @@ public class LinkTerminalGui extends ContainerBase {
             linkCardsMenuOpen = !linkCardsMenuOpen;
         }
 
-        int maxPerRow = (containerWidth - CORNER_OFFSET.x() - linkCardsMenuOffset) / (BUTTON_SIZE + BUTTON_MARGIN);
-        TileEntityBase[] connections = entity.getConnections();
-        for (int i = 0; i < connections.length; i++) {
-            TileEntityBase connection = connections[i];
-            if (connection instanceof HasLinkInfo linkInfo) {
+        if (connections != null) {
+            int maxPerRow = (containerWidth - CORNER_OFFSET.x() - linkCardsMenuOffset) / (BUTTON_SIZE + BUTTON_MARGIN);
+
+            for (int i = 0; i < connections.length; i++) {
+                var connection = connections[i];
                 int buttonX = renderX + CORNER_OFFSET.x() + ((i % maxPerRow) * (BUTTON_SIZE + BUTTON_MARGIN));
                 int buttonY = renderY + CORNER_OFFSET.y() + ((i / maxPerRow) * (BUTTON_SIZE + BUTTON_MARGIN));
                 if (mouseX > buttonX && mouseX < buttonX + BUTTON_SIZE && mouseY > buttonY && mouseY < buttonY + BUTTON_SIZE) {
                     if (mouseButton == 0) {
-                        linkInfo.openLinkMenu(player);
+                        LinkClient.currentlySelectedColor = connection.color();
+                        PacketHelper.send(new OpenLinkedStoragePacket(i, false));
                     } else if (mouseButton == 1) {
+//                        PacketHelper.send(new OpenLinkedStoragePacket(entity.x, entity.y, entity.z, i, true));
                         // TODO Add name edit menu
                     }
                 }

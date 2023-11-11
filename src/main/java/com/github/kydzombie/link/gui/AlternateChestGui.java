@@ -1,9 +1,11 @@
 package com.github.kydzombie.link.gui;
 
+import com.github.kydzombie.link.LinkClient;
 import com.github.kydzombie.link.block.HasLinkInfo;
 import net.minecraft.client.gui.screen.container.ContainerBase;
 import net.minecraft.entity.player.PlayerBase;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.DoubleChest;
 import net.minecraft.inventory.InventoryBase;
 import org.lwjgl.opengl.GL11;
 
@@ -32,11 +34,13 @@ public class AlternateChestGui extends ContainerBase {
     @Override
     protected void renderContainerBackground(float f) {
         int var2 = minecraft.textureManager.getTextureId("/gui/container.png");
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        var color = LinkClient.currentlySelectedColor;
+        GL11.glColor4ub(color.getRedByte(), color.getGreenByte(), color.getBlueByte(), color.getAlphaByte());
         minecraft.textureManager.bindTexture(var2);
         int var3 = (width - this.containerWidth) / 2;
         int var4 = (height - this.containerHeight) / 2;
         this.blit(var3, var4, 0, 0, this.containerWidth, rows * 18 + 17);
         this.blit(var3, var4 + rows * 18 + 17, 0, 126, this.containerWidth, 96);
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
     }
 }

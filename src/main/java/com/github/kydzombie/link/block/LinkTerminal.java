@@ -2,6 +2,8 @@ package com.github.kydzombie.link.block;
 
 import com.github.kydzombie.link.Link;
 import com.github.kydzombie.link.gui.LinkTerminalStorage;
+import com.github.kydzombie.link.packet.LinkConnectionsPacket;
+import com.github.kydzombie.link.util.LinkConnectionInfo;
 import net.minecraft.block.BlockBase;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Item;
@@ -12,12 +14,14 @@ import net.minecraft.tileentity.TileEntityBase;
 import net.modificationstation.stationapi.api.block.BlockState;
 import net.modificationstation.stationapi.api.gui.screen.container.GuiHelper;
 import net.modificationstation.stationapi.api.item.ItemPlacementContext;
+import net.modificationstation.stationapi.api.packet.PacketHelper;
 import net.modificationstation.stationapi.api.registry.Identifier;
 import net.modificationstation.stationapi.api.state.StateManager;
 import net.modificationstation.stationapi.api.state.property.EnumProperty;
 import net.modificationstation.stationapi.api.template.block.TemplateBlockWithEntity;
 import net.modificationstation.stationapi.api.util.math.Direction;
 
+import java.util.Arrays;
 import java.util.Random;
 
 public class LinkTerminal extends TemplateBlockWithEntity implements HasLinkConnection {
@@ -43,8 +47,23 @@ public class LinkTerminal extends TemplateBlockWithEntity implements HasLinkConn
 
     @Override
     public boolean canUse(Level level, int x, int y, int z, PlayerBase player) {
-        if (level.getTileEntity(x, y, z) instanceof LinkTerminalEntity tileEntity) {
-            GuiHelper.openGUI(player, Link.MOD_ID.id("link_terminal"), tileEntity, new LinkTerminalStorage(player, tileEntity));
+        if (level.getTileEntity(x, y, z) instanceof LinkTerminalEntity terminal) {
+            if (!level.isServerSide) {
+                var tileEntities = terminal.getTileEntities();
+                var storage = new LinkTerminalStorage(player, terminal, tileEntities);
+                GuiHelper.openGUI(player, Link.MOD_ID.id("link_terminal"), terminal, storage);
+
+                Link.accessing.put(player, terminal);
+
+                PacketHelper.sendTo(
+                        player,
+                        new LinkConnectionsPacket(
+                                Arrays.stream(tileEntities)
+                                        .map(HasLinkInfo::getLinkConnectionInfo)
+                                        .toArray(LinkConnectionInfo[]::new)
+                        )
+                );
+            }
             return true;
         }
         return false;

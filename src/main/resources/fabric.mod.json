@@ -6,14 +6,14 @@
   "name": "Link",
   "description": "Storage mod built around \"Links.\"",
   "authors": [
-    "Me!"
+    "KydZombie"
   ],
   "contact": {
     "homepage": "https://glass-launcher.net/",
     "sources": "https://github.com/calmilamsy/BIN-fabric-example-mod"
   },
 
-  "license": "CC0-1.0",
+  "license": "MIT",
   "icon": "assets/link/icon.png",
 
   "environment": "*",
