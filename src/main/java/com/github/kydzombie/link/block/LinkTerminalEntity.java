@@ -50,7 +50,19 @@ public class LinkTerminalEntity extends TileEntityBase implements InventoryBase 
                     continue;
                 }
                 if (connections.contains(entity)) continue;
-                connections.add(entity);
+                if (entity instanceof TileEntityChest chest) {
+                    var found = ((CanFindDoubleChest) chest).findInventory();
+                    if (found instanceof DoubleChest doubleChest) {
+                        var left = (TileEntityBase) ((DoubleChestAccessor) doubleChest).getLeft();
+                        if (!connections.contains(left)) {
+                            connections.add(left);
+                        }
+                    } else {
+                        connections.add(entity);
+                    }
+                } else {
+                    connections.add(entity);
+                }
             }
         }
 
@@ -106,14 +118,16 @@ public class LinkTerminalEntity extends TileEntityBase implements InventoryBase 
             if (entity instanceof TileEntityChest chest) {
                 var found = ((CanFindDoubleChest) chest).findInventory();
                 if (found instanceof DoubleChest doubleChest) {
-                    connections.add((TileEntityBase) ((DoubleChestAccessor) doubleChest).getLeft());
+                    var left = (TileEntityBase) ((DoubleChestAccessor) doubleChest).getLeft();
+                    if (!connections.contains(left)) {
+                        connections.add(left);
+                    }
                 } else {
                     connections.add(entity);
                 }
             } else {
                 connections.add(entity);
             }
-
         }
 
         return (T[]) connections.toArray(TileEntityBase[]::new);
