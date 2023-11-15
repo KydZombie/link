@@ -1,238 +1,192 @@
-package com.github.kydzombie.link.block;
+package com.github.kydzombie.link.block
 
-import com.github.kydzombie.link.Link;
-import com.github.kydzombie.link.mixin.DoubleChestAccessor;
-import com.github.kydzombie.link.packet.LinkConnectionsPacket;
-import com.github.kydzombie.link.util.LinkConnectionInfo;
-import net.minecraft.block.BlockBase;
-import net.minecraft.entity.player.PlayerBase;
-import net.minecraft.inventory.DoubleChest;
-import net.minecraft.inventory.InventoryBase;
-import net.minecraft.item.ItemInstance;
-import net.minecraft.tileentity.TileEntityBase;
-import net.minecraft.tileentity.TileEntityChest;
-import net.minecraft.util.io.CompoundTag;
-import net.minecraft.util.io.ListTag;
-import net.modificationstation.stationapi.api.packet.PacketHelper;
-import net.modificationstation.stationapi.api.util.math.Vec3i;
+import com.github.kydzombie.link.Link
+import com.github.kydzombie.link.Link.accessing
+import com.github.kydzombie.link.mixin.DoubleChestAccessor
+import com.github.kydzombie.link.packet.LinkConnectionsPacket
+import com.github.kydzombie.link.util.LinkConnectionInfo
+import net.minecraft.block.BlockBase
+import net.minecraft.entity.player.PlayerBase
+import net.minecraft.inventory.DoubleChest
+import net.minecraft.inventory.InventoryBase
+import net.minecraft.item.ItemInstance
+import net.minecraft.tileentity.TileEntityBase
+import net.minecraft.tileentity.TileEntityChest
+import net.minecraft.util.io.CompoundTag
+import net.minecraft.util.io.ListTag
+import net.modificationstation.stationapi.api.packet.PacketHelper
+import net.modificationstation.stationapi.api.util.math.Vec3i
+import java.util.*
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.stream.Stream;
+class LinkTerminalEntity : TileEntityBase(), InventoryBase {
+    private var inventory = arrayOfNulls<ItemInstance>(6)
+    private val connections: Array<LinkConnectionInfo>
+        get() = tileEntities.map { tileEntity -> (tileEntity as HasLinkInfo).linkConnectionInfo }.filterIsInstance<LinkConnectionInfo>().toTypedArray()
 
-public class LinkTerminalEntity extends TileEntityBase implements InventoryBase {
-    private ItemInstance[] inventory = new ItemInstance[6];
-
-    public LinkTerminalEntity() {
-
-    }
-
-    public LinkConnectionInfo[] getConnections() {
-        return Arrays.stream(getTileEntities()).map(tileEntity ->
-                ((HasLinkInfo) tileEntity).getLinkConnectionInfo()
-        ).toArray(LinkConnectionInfo[]::new);
-    }
-
-    public <T extends TileEntityBase & HasLinkInfo> T[] getTileEntities() {
-        var connections = new ArrayList<TileEntityBase>();
-        if (level == null) {
-            Link.LOGGER.error("LinkTerminalEntity has a null level");
-            return (T[]) new Object[]{};
-        }
-        for (ItemInstance itemInstance : inventory) {
-            if (itemInstance == null || itemInstance.getType() != Link.LINK_CARD) continue;
-            var nbt = itemInstance.getStationNBT();
-            if (nbt.getBoolean("linked")) {
-                var pos = nbt.getCompoundTag("pos");
-                var entity = level.getTileEntity(pos.getInt("x"), pos.getInt("y"), pos.getInt("z"));
-                if (entity == null) {
-                    nbt.put("linked", false);
-                    continue;
-                }
-                if (connections.contains(entity)) continue;
-                if (entity instanceof TileEntityChest chest) {
-                    var found = ((CanFindDoubleChest) chest).findInventory();
-                    if (found instanceof DoubleChest doubleChest) {
-                        var left = (TileEntityBase) ((DoubleChestAccessor) doubleChest).getLeft();
-                        if (!connections.contains(left)) {
-                            connections.add(left);
+    val tileEntities: Array<TileEntityBase>
+        get() {
+            val connections = ArrayList<TileEntityBase>()
+            if (level == null) {
+                Link.LOGGER.error("LinkTerminalEntity has a null level")
+                return emptyArray()
+            }
+            for (itemInstance in inventory) {
+                if (itemInstance == null || itemInstance.type !== Link.LINK_CARD) continue
+                val nbt = itemInstance.stationNBT
+                if (nbt.getBoolean("linked")) {
+                    val pos = nbt.getCompoundTag("pos")
+                    val entity = level.getTileEntity(pos.getInt("x"), pos.getInt("y"), pos.getInt("z"))
+                    if (entity == null) {
+                        nbt.put("linked", false)
+                        continue
+                    }
+                    if (connections.contains(entity)) continue
+                    if (entity is TileEntityChest && entity is CanFindDoubleChest) {
+                        val found = entity.findInventory()
+                        if (found is DoubleChest) {
+                            val left = (found as DoubleChestAccessor).getLeft() as TileEntityBase
+                            if (!connections.contains(left)) {
+                                connections.add(left)
+                            }
+                        } else {
+                            connections.add(entity)
                         }
                     } else {
-                        connections.add(entity);
-                    }
-                } else {
-                    connections.add(entity);
-                }
-            }
-        }
-
-        ArrayList<Vec3i> cablesToCheck = new ArrayList<>();
-        ArrayList<Vec3i> cablesChecked = new ArrayList<>();
-        ArrayList<Vec3i> connectors = new ArrayList<>();
-
-        var relativeBlocks = new Vec3i[]{
-                new Vec3i(x + 1, y, z), new Vec3i(x - 1, y, z),
-                new Vec3i(x, y + 1, z), new Vec3i(x, y - 1, z),
-                new Vec3i(x, y, z + 1), new Vec3i(x, y, z - 1),
-        };
-
-        for (Vec3i relativePos : relativeBlocks) {
-            var block = BlockBase.BY_ID[level.getTileId(relativePos.getX(), relativePos.getY(), relativePos.getZ())];
-            if (block == null) continue;
-            if (block instanceof LinkCable) {
-                if (!cablesToCheck.contains(relativePos)) {
-                    cablesToCheck.add(new Vec3i(relativePos.getX(), relativePos.getY(), relativePos.getZ()));
-                }
-                if (block instanceof LinkConnector) {
-                    connectors.add(new Vec3i(relativePos.getX(), relativePos.getY(), relativePos.getZ()));
-                }
-            }
-        }
-
-        while (!cablesToCheck.isEmpty()) {
-            var cablePos = cablesToCheck.get(0);
-            relativeBlocks = new Vec3i[]{
-                    new Vec3i(cablePos.getX() + 1, cablePos.getY(), cablePos.getZ()), new Vec3i(cablePos.getX() - 1, cablePos.getY(), cablePos.getZ()),
-                    new Vec3i(cablePos.getX(), cablePos.getY() + 1, cablePos.getZ()), new Vec3i(cablePos.getX(), cablePos.getY() - 1, cablePos.getZ()),
-                    new Vec3i(cablePos.getX(), cablePos.getY(), cablePos.getZ() + 1), new Vec3i(cablePos.getX(), cablePos.getY(), cablePos.getZ() - 1),
-            };
-            for (Vec3i relativePos : relativeBlocks) {
-                var block = BlockBase.BY_ID[level.getTileId(relativePos.getX(), relativePos.getY(), relativePos.getZ())];
-                if (block == null) continue;
-                if (block instanceof LinkCable) {
-                    if (!cablesToCheck.contains(relativePos) && !cablesChecked.contains(relativePos)) {
-                        cablesToCheck.add(new Vec3i(relativePos.getX(), relativePos.getY(), relativePos.getZ()));
-                    }
-                    if (block instanceof LinkConnector) {
-                        connectors.add(new Vec3i(relativePos.getX(), relativePos.getY(), relativePos.getZ()));
+                        connections.add(entity)
                     }
                 }
             }
-            cablesChecked.add(cablePos);
-            cablesToCheck.remove(0);
-        }
-
-        for (Vec3i connectorPos : connectors) {
-            var entity = Link.LINK_CONNECTOR.getConnectedTo(level, connectorPos.getX(), connectorPos.getY(), connectorPos.getZ());
-            if (entity == null || connections.contains(entity)) continue;
-            if (entity instanceof TileEntityChest chest) {
-                var found = ((CanFindDoubleChest) chest).findInventory();
-                if (found instanceof DoubleChest doubleChest) {
-                    var left = (TileEntityBase) ((DoubleChestAccessor) doubleChest).getLeft();
-                    if (!connections.contains(left)) {
-                        connections.add(left);
+            val cablesToCheck = ArrayList<Vec3i>()
+            val cablesChecked = ArrayList<Vec3i>()
+            val connectors = ArrayList<Vec3i>()
+            var relativeBlocks = arrayOf(
+                Vec3i(x + 1, y, z), Vec3i(x - 1, y, z),
+                Vec3i(x, y + 1, z), Vec3i(x, y - 1, z),
+                Vec3i(x, y, z + 1), Vec3i(x, y, z - 1)
+            )
+            for (relativePos in relativeBlocks) {
+                val block = BlockBase.BY_ID[level.getTileId(relativePos.x, relativePos.y, relativePos.z)] ?: continue
+                if (block is LinkCable) {
+                    if (!cablesToCheck.contains(relativePos)) {
+                        cablesToCheck.add(Vec3i(relativePos.x, relativePos.y, relativePos.z))
                     }
-                } else {
-                    connections.add(entity);
+                    if (block is LinkConnector) {
+                        connectors.add(Vec3i(relativePos.x, relativePos.y, relativePos.z))
+                    }
                 }
-            } else {
-                connections.add(entity);
             }
-        }
-
-        return (T[]) connections.toArray(TileEntityBase[]::new);
-    }
-
-    @Override
-    public int getInventorySize() {
-        return inventory.length;
-    }
-
-    @Override
-    public ItemInstance getInventoryItem(int i) {
-        if (i > getInventorySize()) return null;
-        return inventory[i];
-    }
-
-    @Override
-    public ItemInstance takeInventoryItem(int i, int j) {
-        var existingItem = getInventoryItem(i);
-        if (existingItem != null) {
-            inventory[i] = null;
-            Link.accessing.keySet().stream().filter(player -> Link.accessing.get(player) == this).findFirst().ifPresent(player ->
-                    PacketHelper.sendTo(
-                            player, new LinkConnectionsPacket(
-                                    ((Stream<HasLinkInfo>) (Object) Arrays.stream(getTileEntities()))
-                                            .map(HasLinkInfo::getLinkConnectionInfo)
-                                            .toArray(LinkConnectionInfo[]::new)
-                            )
-                    )
-            );
-            return existingItem;
-        } else {
-            Link.accessing.keySet().stream().filter(player -> Link.accessing.get(player) == this).findFirst().ifPresent(player ->
-                    PacketHelper.sendTo(
-                            player, new LinkConnectionsPacket(
-                                    ((Stream<HasLinkInfo>) (Object) Arrays.stream(getTileEntities()))
-                                            .map(HasLinkInfo::getLinkConnectionInfo)
-                                            .toArray(LinkConnectionInfo[]::new)
-                            )
-                    )
-            );
-            return null;
-        }
-    }
-
-    @Override
-    public void setInventoryItem(int i, ItemInstance itemInstance) {
-        if (i > inventory.length) return;
-        inventory[i] = itemInstance;
-
-        Link.accessing.keySet().stream().filter(player -> Link.accessing.get(player) == this).findFirst().ifPresent(player ->
-                PacketHelper.sendTo(
-                        player, new LinkConnectionsPacket(
-                                ((Stream<HasLinkInfo>) (Object) Arrays.stream(getTileEntities()))
-                                        .map(HasLinkInfo::getLinkConnectionInfo)
-                                        .toArray(LinkConnectionInfo[]::new)
-                        )
+            while (cablesToCheck.isNotEmpty()) {
+                val cablePos = cablesToCheck[0]
+                relativeBlocks = arrayOf(
+                    Vec3i(cablePos.x + 1, cablePos.y, cablePos.z), Vec3i(cablePos.x - 1, cablePos.y, cablePos.z),
+                    Vec3i(cablePos.x, cablePos.y + 1, cablePos.z), Vec3i(cablePos.x, cablePos.y - 1, cablePos.z),
+                    Vec3i(cablePos.x, cablePos.y, cablePos.z + 1), Vec3i(cablePos.x, cablePos.y, cablePos.z - 1)
                 )
-        );
+                for (relativePos in relativeBlocks) {
+                    val block = BlockBase.BY_ID[level.getTileId(relativePos.x, relativePos.y, relativePos.z)] ?: continue
+                    if (block is LinkCable) {
+                        if (!cablesToCheck.contains(relativePos) && !cablesChecked.contains(relativePos)) {
+                            cablesToCheck.add(Vec3i(relativePos.x, relativePos.y, relativePos.z))
+                        }
+                        if (block is LinkConnector) {
+                            connectors.add(Vec3i(relativePos.x, relativePos.y, relativePos.z))
+                        }
+                    }
+                }
+                cablesChecked.add(cablePos)
+                cablesToCheck.removeAt(0)
+            }
+            for (connectorPos in connectors) {
+                val entity = Link.LINK_CONNECTOR.getConnectedTo(level, connectorPos.x, connectorPos.y, connectorPos.z)
+                if (entity == null || connections.contains(entity)) continue
+                if (entity is TileEntityChest) {
+                    val found = (entity as CanFindDoubleChest).findInventory()
+                    if (found is DoubleChest) {
+                        val left = (found as DoubleChestAccessor).getLeft() as TileEntityBase
+                        if (!connections.contains(left)) {
+                            connections.add(left)
+                        }
+                    } else {
+                        connections.add(entity)
+                    }
+                } else {
+                    connections.add(entity)
+                }
+            }
+            return connections.toTypedArray()
+        }
+
+    override fun getInventorySize(): Int {
+        return inventory.size
     }
 
-    @Override
-    public String getContainerName() {
-        return "Link Terminal";
+    override fun getInventoryItem(i: Int): ItemInstance? {
+        return if (i > inventorySize) null else inventory[i]
     }
 
-    @Override
-    public int getMaxItemCount() {
-        return 64;
+    fun sendUpdatePacket(player: PlayerBase?) {
+        if (player != null) {
+            PacketHelper.sendTo(player, LinkConnectionsPacket(connections))
+        }
     }
 
-    @Override
-    public boolean canPlayerUse(PlayerBase arg) {
-        return true;
+    fun sendUpdatePacket() {
+        sendUpdatePacket(accessing.inverse[this])
     }
 
-    @Override
-    public void readIdentifyingData(CompoundTag tag) {
-        super.readIdentifyingData(tag);
+    override fun takeInventoryItem(i: Int, j: Int): ItemInstance? {
+        val existingItem = getInventoryItem(i)
+        return if (existingItem != null) {
+            inventory[i] = null
+            sendUpdatePacket()
+            existingItem
+        } else {
+            sendUpdatePacket()
+            null
+        }
+    }
 
-        var listTag = tag.getListTag("inventory");
-        inventory = new ItemInstance[6];
+    override fun setInventoryItem(i: Int, itemInstance: ItemInstance?) {
+        if (i > inventory.size) return
+        inventory[i] = itemInstance
+        sendUpdatePacket()
+    }
 
-        for (int i = 0; i < listTag.size(); ++i) {
-            var compoundTag = (CompoundTag) listTag.get(i);
-            int slot = compoundTag.getByte("Slot") & 255;
-            if (slot < inventory.length) {
-                inventory[slot] = new ItemInstance(compoundTag);
+    override fun getContainerName(): String {
+        return "Link Terminal"
+    }
+
+    override fun getMaxItemCount(): Int {
+        return 64
+    }
+
+    override fun canPlayerUse(arg: PlayerBase): Boolean {
+        return true
+    }
+
+    override fun readIdentifyingData(tag: CompoundTag) {
+        super.readIdentifyingData(tag)
+        val listTag = tag.getListTag("inventory")
+        inventory = arrayOfNulls(6)
+        for (i in 0 until listTag.size()) {
+            val compoundTag = listTag[i] as CompoundTag
+            val slot = compoundTag.getByte("Slot").toInt() and 255
+            if (slot < inventory.size) {
+                inventory[slot] = ItemInstance(compoundTag)
             }
         }
     }
 
-    @Override
-    public void writeIdentifyingData(CompoundTag tag) {
-        super.writeIdentifyingData(tag);
-        var listTag = new ListTag();
-
-        for (int i = 0; i < inventory.length; ++i) {
-            if (inventory[i] == null) continue;
-            var compoundTag = new CompoundTag();
-            compoundTag.put("Slot", (byte) i);
-            inventory[i].toTag(compoundTag);
-            listTag.add(compoundTag);
+    override fun writeIdentifyingData(tag: CompoundTag) {
+        super.writeIdentifyingData(tag)
+        val listTag = ListTag()
+        for (i in inventory.indices) {
+            if (inventory[i] == null) continue
+            val compoundTag = CompoundTag()
+            compoundTag.put("Slot", i.toByte())
+            inventory[i]!!.toTag(compoundTag)
+            listTag.add(compoundTag)
         }
-
-        tag.put("inventory", listTag);
+        tag.put("inventory", listTag)
     }
 }

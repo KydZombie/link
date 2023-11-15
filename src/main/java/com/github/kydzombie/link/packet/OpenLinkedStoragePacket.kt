@@ -1,64 +1,59 @@
-package com.github.kydzombie.link.packet;
+package com.github.kydzombie.link.packet
 
-import com.github.kydzombie.link.Link;
-import net.minecraft.network.PacketHandler;
-import net.minecraft.packet.AbstractPacket;
-import net.modificationstation.stationapi.api.entity.player.PlayerHelper;
-import net.modificationstation.stationapi.api.packet.IdentifiablePacket;
-import net.modificationstation.stationapi.api.registry.Identifier;
+import com.github.kydzombie.link.Link
+import com.github.kydzombie.link.Link.accessing
+import com.github.kydzombie.link.block.HasLinkInfo
+import net.minecraft.network.PacketHandler
+import net.minecraft.packet.AbstractPacket
+import net.modificationstation.stationapi.api.entity.player.PlayerHelper
+import net.modificationstation.stationapi.api.packet.IdentifiablePacket
+import net.modificationstation.stationapi.api.registry.Identifier
+import java.io.DataInputStream
+import java.io.DataOutputStream
+import java.io.IOException
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+class OpenLinkedStoragePacket : AbstractPacket, IdentifiablePacket {
+    private var index = 0
+    private var editMenu = false
 
-public class OpenLinkedStoragePacket extends AbstractPacket implements IdentifiablePacket {
-    private int index;
-    private boolean editMenu;
-
-    public OpenLinkedStoragePacket() {
+    constructor()
+    constructor(index: Int, editMenu: Boolean) {
+        this.index = index
+        this.editMenu = editMenu
     }
 
-    public OpenLinkedStoragePacket(int index, boolean editMenu) {
-        this.index = index;
-        this.editMenu = editMenu;
-    }
-
-    @Override
-    public void read(DataInputStream dataInputStream) {
+    override fun read(dataInputStream: DataInputStream) {
         try {
-            index = dataInputStream.readInt();
-            editMenu = dataInputStream.readBoolean();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            index = dataInputStream.readInt()
+            editMenu = dataInputStream.readBoolean()
+        } catch (e: IOException) {
+            throw RuntimeException(e)
         }
     }
 
-    @Override
-    public void write(DataOutputStream dataOutputStream) {
+    override fun write(dataOutputStream: DataOutputStream) {
         try {
-            dataOutputStream.writeInt(index);
-            dataOutputStream.writeBoolean(editMenu);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            dataOutputStream.writeInt(index)
+            dataOutputStream.writeBoolean(editMenu)
+        } catch (e: IOException) {
+            throw RuntimeException(e)
         }
     }
 
-    @Override
-    public void apply(PacketHandler packetHandler) {
-        var player = PlayerHelper.getPlayerFromPacketHandler(packetHandler);
-        var entities = Link.accessing.get(player).getTileEntities();
-        if (entities.length > index) {
-            entities[index].openLinkMenu(player);
+    override fun apply(packetHandler: PacketHandler?) {
+        val player = PlayerHelper.getPlayerFromPacketHandler(packetHandler)
+        accessing[player]?.tileEntities?.let { entities ->
+            if (entities.size > index) {
+                (entities[index] as HasLinkInfo).openLinkMenu(player)
+            }
         }
     }
 
-    @Override
-    public int length() {
-        return 4 + 1;
+    override fun length(): Int {
+        return 4 + 1
     }
 
-    @Override
-    public Identifier getId() {
-        return Link.MOD_ID.id("open_linked_storage");
+    override fun getId(): Identifier {
+        return Link.MOD_ID.id("open_linked_storage")
     }
 }

@@ -1,144 +1,142 @@
-package com.github.kydzombie.link.block;
+package com.github.kydzombie.link.block
 
-import net.minecraft.block.BlockBase;
-import net.minecraft.block.material.Material;
-import net.minecraft.level.BlockView;
-import net.minecraft.level.Level;
-import net.minecraft.util.maths.Box;
-import net.modificationstation.stationapi.api.block.BlockState;
-import net.modificationstation.stationapi.api.item.ItemPlacementContext;
-import net.modificationstation.stationapi.api.registry.Identifier;
-import net.modificationstation.stationapi.api.state.StateManager;
-import net.modificationstation.stationapi.api.state.property.BooleanProperty;
-import net.modificationstation.stationapi.api.template.block.TemplateBlockBase;
-import net.modificationstation.stationapi.api.util.math.Direction;
-import net.modificationstation.stationapi.api.world.BlockStateView;
+import net.minecraft.block.BlockBase
+import net.minecraft.block.material.Material
+import net.minecraft.level.BlockView
+import net.minecraft.level.Level
+import net.minecraft.util.maths.Box
+import net.modificationstation.stationapi.api.block.BlockState
+import net.modificationstation.stationapi.api.item.ItemPlacementContext
+import net.modificationstation.stationapi.api.registry.Identifier
+import net.modificationstation.stationapi.api.state.StateManager
+import net.modificationstation.stationapi.api.state.property.BooleanProperty
+import net.modificationstation.stationapi.api.template.block.TemplateBlockBase
+import net.modificationstation.stationapi.api.util.math.Direction
+import net.modificationstation.stationapi.api.world.BlockStateView
 
-public class LinkCable extends TemplateBlockBase {
-    public static final BooleanProperty NORTH = BooleanProperty.of("north");
-    public static final BooleanProperty SOUTH = BooleanProperty.of("south");
-    public static final BooleanProperty EAST = BooleanProperty.of("east");
-    public static final BooleanProperty WEST = BooleanProperty.of("west");
-    public static final BooleanProperty UP = BooleanProperty.of("up");
-    public static final BooleanProperty DOWN = BooleanProperty.of("down");
+open class LinkCable constructor(
+    identifier: Identifier,
+    material: Material,
+    cableWidth: Float = .4f
+) : TemplateBlockBase(identifier, material) {
+    val minSize = .5f - cableWidth / 2
+    val maxSize = .5f + cableWidth / 2
 
-    final float MIN_SIZE;
-    final float MAX_SIZE;
-
-    public LinkCable(Identifier identifier, Material material, float cableWidth) {
-        super(identifier, material);
-        MIN_SIZE = .5f - (cableWidth / 2);
-        MAX_SIZE = .5f + (cableWidth / 2);
-
-        this.setHardness(0.8f);
-
-        setTranslationKey(identifier.toString());
-        setDefaultState(getStateManager().getDefaultState()
-                .with(NORTH, false)
-                .with(SOUTH, false)
-                .with(EAST, false)
-                .with(WEST, false)
-                .with(UP, false)
-                .with(DOWN, false));
+    init {
+        this.setHardness(0.8f)
+        translationKey = identifier.toString()
+        defaultState = stateManager.defaultState
+            .with(NORTH, false)
+            .with(SOUTH, false)
+            .with(EAST, false)
+            .with(WEST, false)
+            .with(UP, false)
+            .with(DOWN, false)
     }
 
-    public LinkCable(Identifier identifier, Material material) {
-        this(identifier, material, .4f);
+    override fun appendProperties(builder: StateManager.Builder<BlockBase, BlockState>) {
+        builder.add(NORTH, SOUTH, EAST, WEST, UP, DOWN)
     }
 
-    @Override
-    public void appendProperties(StateManager.Builder<BlockBase, BlockState> builder) {
-        builder.add(NORTH, SOUTH, EAST, WEST, UP, DOWN);
+    override fun onBlockPlaced(level: Level, x: Int, y: Int, z: Int) {
+        super.onBlockPlaced(level, x, y, z)
+        updateBoundingBox(level, x, y, z)
     }
 
-    @Override
-    public void onBlockPlaced(Level level, int x, int y, int z) {
-        super.onBlockPlaced(level, x, y, z);
-        updateBoundingBox(level, x, y, z);
-    }
-
-    @Override
-    public void onAdjacentBlockUpdate(Level level, int x, int y, int z, int id) {
-        level.setBlockState(x, y, z, level.getBlockState(x, y, z)
+    override fun onAdjacentBlockUpdate(level: Level, x: Int, y: Int, z: Int, id: Int) {
+        level.setBlockState(
+            x, y, z, level.getBlockState(x, y, z)
                 .with(NORTH, checkConnection(level, x - 1, y, z, 5))
                 .with(SOUTH, checkConnection(level, x + 1, y, z, 4))
                 .with(EAST, checkConnection(level, x, y, z - 1, 3))
                 .with(WEST, checkConnection(level, x, y, z + 1, 2))
                 .with(UP, checkConnection(level, x, y + 1, z, 0))
-                .with(DOWN, checkConnection(level, x, y - 1, z, 1)));
-        updateBoundingBox(level, x, y, z);
+                .with(DOWN, checkConnection(level, x, y - 1, z, 1))
+        )
+        updateBoundingBox(level, x, y, z)
     }
 
-    @Override
-    public BlockState getPlacementState(ItemPlacementContext context) {
-        var level = context.getWorld();
-        var pos = context.getBlockPos();
-        var x = pos.x;
-        var y = pos.y;
-        var z = pos.z;
-        return getDefaultState()
-                .with(NORTH, checkConnection(level, x - 1, y, z, 5))
-                .with(SOUTH, checkConnection(level, x + 1, y, z, 4))
-                .with(EAST, checkConnection(level, x, y, z - 1, 3))
-                .with(WEST, checkConnection(level, x, y, z + 1, 2))
-                .with(UP, checkConnection(level, x, y + 1, z, 0))
-                .with(DOWN, checkConnection(level, x, y - 1, z, 1));
+    override fun getPlacementState(context: ItemPlacementContext): BlockState {
+        val level = context.world
+        val pos = context.blockPos
+        val x = pos.x
+        val y = pos.y
+        val z = pos.z
+        return defaultState
+            .with(NORTH, checkConnection(level, x - 1, y, z, 5))
+            .with(SOUTH, checkConnection(level, x + 1, y, z, 4))
+            .with(EAST, checkConnection(level, x, y, z - 1, 3))
+            .with(WEST, checkConnection(level, x, y, z + 1, 2))
+            .with(UP, checkConnection(level, x, y + 1, z, 0))
+            .with(DOWN, checkConnection(level, x, y - 1, z, 1))
     }
 
-    @Override
-    public boolean isFullOpaque() {
-        return false;
+    override fun isFullOpaque(): Boolean {
+        return false
     }
 
-    @Override
-    public boolean isFullCube() {
-        return false;
+    override fun isFullCube(): Boolean {
+        return false
     }
 
-    @Override
-    public Box getCollisionShape(Level level, int x, int y, int z) {
-        if (level.getTileId(x, y, z) == id) {
-            return getOutline(level.getBlockState(x, y, z), x, y, z);
-        }
-        return super.getCollisionShape(level, x, y, z);
+    override fun getCollisionShape(level: Level, x: Int, y: Int, z: Int): Box {
+        return if (level.getTileId(x, y, z) == id) {
+            getOutline(level.getBlockState(x, y, z), x, y, z)
+        } else super.getCollisionShape(level, x, y, z)
     }
 
-    protected Box getOutline(BlockState blockState, int x, int y, int z) {
-        float maxX = blockState.get(SOUTH) ? 1 : MAX_SIZE;
-        float minX = blockState.get(NORTH) ? 0 : MIN_SIZE;
-        float maxY = blockState.get(UP) ? 1 : MAX_SIZE;
-        float minY = blockState.get(DOWN) ? 0 : MIN_SIZE;
-        float maxZ = blockState.get(WEST) ? 1 : MAX_SIZE;
-        float minZ = blockState.get(EAST) ? 0 : MIN_SIZE;
-
-        return Box.create(x + minX, y + minY, z + minZ, x + maxX, y + maxY, z + maxZ);
+    protected open fun getOutline(blockState: BlockState, x: Int, y: Int, z: Int): Box {
+        val maxX: Float = if (blockState.get(SOUTH)) 1f else maxSize
+        val minX: Float = if (blockState.get(NORTH)) 0f else minSize
+        val maxY: Float = if (blockState.get(UP)) 1f else maxSize
+        val minY: Float = if (blockState.get(DOWN)) 0f else minSize
+        val maxZ: Float = if (blockState.get(WEST)) 1f else maxSize
+        val minZ: Float = if (blockState.get(EAST)) 0f else minSize
+        return Box.create(
+            (x + minX).toDouble(),
+            (y + minY).toDouble(),
+            (z + minZ).toDouble(),
+            (x + maxX).toDouble(),
+            (y + maxY).toDouble(),
+            (z + maxZ).toDouble()
+        )
     }
 
-    @Override
-    public Box getOutlineShape(Level level, int x, int y, int z) {
-        return getOutline(level.getBlockState(x, y, z), x, y, z);
+    override fun getOutlineShape(level: Level, x: Int, y: Int, z: Int): Box {
+        return getOutline(level.getBlockState(x, y, z), x, y, z)
     }
 
-    @Override
-    public void updateBoundingBox(BlockView arg, int x, int y, int z) {
+    override fun updateBoundingBox(arg: BlockView, x: Int, y: Int, z: Int) {
 //        var box = getOutline(((BlockStateView) arg).getBlockState(x, y, z), x, y, z);
-        var blockState = ((BlockStateView) arg).getBlockState(x, y, z);
-
-        float maxX = blockState.get(SOUTH) ? 1 : MAX_SIZE;
-        float minX = blockState.get(NORTH) ? 0 : MIN_SIZE;
-        float maxY = blockState.get(UP) ? 1 : MAX_SIZE;
-        float minY = blockState.get(DOWN) ? 0 : MIN_SIZE;
-        float maxZ = blockState.get(WEST) ? 1 : MAX_SIZE;
-        float minZ = blockState.get(EAST) ? 0 : MIN_SIZE;
-
-        setBoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
+        val blockState = (arg as BlockStateView).getBlockState(x, y, z)
+        val maxX: Float = if (blockState.get(SOUTH)) 1f else maxSize
+        val minX: Float = if (blockState.get(NORTH)) 0f else minSize
+        val maxY: Float = if (blockState.get(UP)) 1f else maxSize
+        val minY: Float = if (blockState.get(DOWN)) 0f else minSize
+        val maxZ: Float = if (blockState.get(WEST)) 1f else maxSize
+        val minZ: Float = if (blockState.get(EAST)) 0f else minSize
+        setBoundingBox(minX, minY, minZ, maxX, maxY, maxZ)
     }
 
-    boolean checkConnection(Level level, int x, int y, int z, int side) {
-        var block = BlockBase.BY_ID[level.getTileId(x, y, z)];
-        if (block instanceof HasLinkConnection connection) {
-            return connection.canConnectLinkCable(level, x, y, z, Direction.byId(side));
-        }
-        return block instanceof LinkCable;
+    private fun checkConnection(level: Level, x: Int, y: Int, z: Int, side: Int): Boolean {
+        val block = BY_ID[level.getTileId(x, y, z)]
+        return if (block is HasLinkConnection) {
+            block.canConnectLinkCable(
+                level,
+                x,
+                y,
+                z,
+                Direction.byId(side)
+            )
+        } else block is LinkCable
+    }
+
+    companion object {
+        val NORTH: BooleanProperty = BooleanProperty.of("north")
+        val SOUTH: BooleanProperty = BooleanProperty.of("south")
+        val EAST: BooleanProperty = BooleanProperty.of("east")
+        val WEST: BooleanProperty = BooleanProperty.of("west")
+        val UP: BooleanProperty = BooleanProperty.of("up")
+        val DOWN: BooleanProperty = BooleanProperty.of("down")
     }
 }

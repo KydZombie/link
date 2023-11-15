@@ -1,5 +1,4 @@
-package com.github.kydzombie.link.util;
+package com.github.kydzombie.link.util
 
-public record Vector2i(int x, int y) {
-
-}
+@JvmRecord
+data class Vector2i(val x: Int, val y: Int)

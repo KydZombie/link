@@ -1,42 +1,35 @@
-package com.github.kydzombie.link.registry;
+package com.github.kydzombie.link.registry
 
-import com.github.kydzombie.link.gui.LinkTerminalGui;
-import com.github.kydzombie.link.util.Vector2i;
-import net.minecraft.client.gui.DrawableHelper;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.Color;
+import com.github.kydzombie.link.gui.LinkTerminalGui
+import com.github.kydzombie.link.util.Vector2i
+import net.minecraft.client.gui.DrawableHelper
+import org.lwjgl.opengl.GL11
+import org.lwjgl.util.Color
 
-public class LinkIcon {
-    private final int buttonSize;
+open class LinkIcon(private val texturePos: Vector2i) {
+    private val buttonSize: Int = LinkTerminalGui.BUTTON_SIZE
 
-    private static final Vector2i BACKGROUND_UNSELECTED = new Vector2i(176, 0);
-    private static final Vector2i BACKGROUND_SELECTED = new Vector2i(176, 22);
+    constructor(textureX: Int, textureY: Int) : this(Vector2i(textureX, textureY))
 
-    private Vector2i texturePos;
-
-    public LinkIcon(Vector2i texturePos) {
-        this.texturePos = texturePos;
-        this.buttonSize = LinkTerminalGui.BUTTON_SIZE;
+    protected open fun getLinkBackgroundCoordinates(selected: Boolean): Vector2i {
+        return if (selected) BACKGROUND_SELECTED else BACKGROUND_UNSELECTED
     }
 
-    public LinkIcon(int textureX, int textureY) {
-        this(new Vector2i(textureX, textureY));
+    protected open fun getLinkIconCoordinates(selected: Boolean): Vector2i {
+        return texturePos
     }
 
-    Vector2i getLinkBackgroundCoordinates(boolean selected) {
-        return selected ? BACKGROUND_SELECTED : BACKGROUND_UNSELECTED;
+    open fun render(x: Int, y: Int, selected: Boolean, color: Color, helper: DrawableHelper) {
+        GL11.glColor3ub(color.redByte, color.greenByte, color.blueByte)
+        val backgroundCoords = getLinkBackgroundCoordinates(selected)
+        helper.blit(x, y, backgroundCoords.x, backgroundCoords.y, buttonSize, buttonSize)
+        GL11.glColor3f(1f, 1f, 1f)
+        val iconCoords = getLinkIconCoordinates(selected)
+        helper.blit(x, y, iconCoords.x, iconCoords.y, buttonSize, buttonSize)
     }
 
-    Vector2i getLinkIconCoordinates(boolean selected) {
-        return texturePos;
-    }
-
-    public void render(int x, int y, boolean selected, Color color, DrawableHelper helper) {
-        GL11.glColor3ub(color.getRedByte(), color.getGreenByte(), color.getBlueByte());
-        var backgroundCoords = getLinkBackgroundCoordinates(selected);
-        helper.blit(x, y, backgroundCoords.x(), backgroundCoords.y(), buttonSize, buttonSize);
-        GL11.glColor3f(1f, 1f, 1f);
-        var iconCoords = getLinkIconCoordinates(selected);
-        helper.blit(x, y, iconCoords.x(), iconCoords.y(), buttonSize, buttonSize);
+    companion object {
+        private val BACKGROUND_UNSELECTED = Vector2i(176, 0)
+        private val BACKGROUND_SELECTED = Vector2i(176, 22)
     }
 }

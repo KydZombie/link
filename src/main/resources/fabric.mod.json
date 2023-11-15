@@ -16,10 +16,16 @@
   "environment": "*",
   "entrypoints": {
     "stationapi:event_bus": [
-      "com.github.kydzombie.link.Link"
+      {
+        "adapter": "kotlin",
+        "value": "com.github.kydzombie.link.Link"
+      }
     ],
     "stationapi:event_bus_client": [
-      "com.github.kydzombie.link.LinkClient"
+      {
+        "adapter": "kotlin",
+        "value": "com.github.kydzombie.link.LinkClient"
+      }
     ],
     "stationapi:event_bus_server": [
     ]

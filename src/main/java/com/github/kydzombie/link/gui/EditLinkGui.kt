@@ -1,4 +1,5 @@
-package com.github.kydzombie.link.gui;
+package com.github.kydzombie.link.gui
 
-public class LinkModifierGui {
+class EditLinkGui {
+
 }

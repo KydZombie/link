@@ -1,16 +1,9 @@
-package com.github.kydzombie.link.gui;
+package com.github.kydzombie.link.gui
 
-import net.minecraft.container.Chest;
-import net.minecraft.entity.player.PlayerBase;
-import net.minecraft.inventory.InventoryBase;
+import net.minecraft.container.Chest
+import net.minecraft.entity.player.PlayerBase
+import net.minecraft.inventory.InventoryBase
 
-public class AlternateChestStorage extends Chest {
-    public AlternateChestStorage(InventoryBase arg, InventoryBase arg2) {
-        super(arg, arg2);
-    }
-
-    @Override
-    public boolean canUse(PlayerBase arg) {
-        return true;
-    }
+class AlternateChestStorage(arg: InventoryBase?, arg2: InventoryBase?) : Chest(arg, arg2) {
+    override fun canUse(arg: PlayerBase): Boolean = true
 }

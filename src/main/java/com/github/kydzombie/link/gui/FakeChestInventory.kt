@@ -1,99 +1,58 @@
-package com.github.kydzombie.link.gui;
+package com.github.kydzombie.link.gui
 
-import com.github.kydzombie.link.block.HasLinkInfo;
-import net.minecraft.entity.player.PlayerBase;
-import net.minecraft.inventory.InventoryBase;
-import net.minecraft.item.ItemInstance;
-import org.lwjgl.util.Color;
+import com.github.kydzombie.link.block.HasLinkInfo
+import net.minecraft.entity.player.PlayerBase
+import net.minecraft.inventory.InventoryBase
+import net.minecraft.item.ItemInstance
+import org.lwjgl.util.Color
 
-public class FakeChestInventory implements HasLinkInfo, InventoryBase {
-    ItemInstance[] inventory = new ItemInstance[27];
+class FakeChestInventory : HasLinkInfo, InventoryBase {
+    var inventory = arrayOfNulls<ItemInstance>(27)
+    override fun getLinkName(): String = "Chest"
 
-    @Override
-    public String getLinkName() {
-        return "Chest";
-    }
+    override fun setLinkName(name: String) = Unit
+    override fun getColor(): Color = Color.WHITE as Color
 
-    @Override
-    public void setLinkName(String name) {
+    override fun setColor(color: Color) = Unit
+    override fun openLinkMenu(player: PlayerBase) = Unit
+    override fun getInventorySize(): Int = 27
 
-    }
+    override fun getInventoryItem(i: Int): ItemInstance? = inventory[i]
 
-    @Override
-    public Color getColor() {
-        return (Color) Color.WHITE;
-    }
-
-    @Override
-    public void setColor(Color color) {
-
-    }
-
-    @Override
-    public void openLinkMenu(PlayerBase player) {
-
-    }
-
-    @Override
-    public int getInventorySize() {
-        return 27;
-    }
-
-    @Override
-    public ItemInstance getInventoryItem(int i) {
-        return inventory[i];
-    }
-
-    @Override
-    public ItemInstance takeInventoryItem(int i, int j) {
-        if (this.inventory[i] != null) {
-            ItemInstance var3;
-            if (this.inventory[i].count <= j) {
-                var3 = this.inventory[i];
-                this.inventory[i] = null;
-                this.markDirty();
-                return var3;
+    override fun takeInventoryItem(i: Int, j: Int): ItemInstance? {
+        return if (inventory[i] != null) {
+            val var3: ItemInstance
+            if (inventory[i]!!.count <= j) {
+                var3 = inventory[i]!!
+                inventory[i] = null
+                markDirty()
+                var3
             } else {
-                var3 = this.inventory[i].split(j);
-                if (this.inventory[i].count == 0) {
-                    this.inventory[i] = null;
+                var3 = inventory[i]!!.split(j)
+                if (inventory[i]!!.count == 0) {
+                    inventory[i] = null
                 }
-
-                this.markDirty();
-                return var3;
+                markDirty()
+                var3
             }
         } else {
-            return null;
+            null
         }
     }
 
-    @Override
-    public void setInventoryItem(int i, ItemInstance arg) {
-        this.inventory[i] = arg;
-        if (arg != null && arg.count > this.getMaxItemCount()) {
-            arg.count = this.getMaxItemCount();
+    override fun setInventoryItem(i: Int, itemInstance: ItemInstance?) {
+        inventory[i] = itemInstance
+        if (itemInstance != null && itemInstance.count > this.maxItemCount) {
+            itemInstance.count = this.maxItemCount
         }
-
-        this.markDirty();
+        markDirty()
     }
 
-    @Override
-    public String getContainerName() {
-        return "Chest";
-    }
+    override fun getContainerName(): String = "Chest"
 
-    @Override
-    public int getMaxItemCount() {
-        return 64;
-    }
+    override fun getMaxItemCount(): Int = 64
 
-    @Override
-    public void markDirty() {
+    override fun markDirty() = Unit
 
-    }
-
-    @Override
-    public boolean canPlayerUse(PlayerBase arg) {
-        return true;
-    }
+    override fun canPlayerUse(arg: PlayerBase): Boolean = true
 }

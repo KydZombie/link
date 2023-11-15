@@ -1,44 +1,29 @@
-package com.github.kydzombie.link.packet;
+package com.github.kydzombie.link.packet
 
-import com.github.kydzombie.link.Link;
-import com.github.kydzombie.link.block.HasLinkInfo;
-import com.github.kydzombie.link.util.LinkConnectionInfo;
-import net.minecraft.network.PacketHandler;
-import net.minecraft.packet.AbstractPacket;
-import net.modificationstation.stationapi.api.entity.player.PlayerHelper;
-import net.modificationstation.stationapi.api.packet.PacketHelper;
+import com.github.kydzombie.link.Link.accessing
+import com.github.kydzombie.link.block.HasLinkInfo
+import com.github.kydzombie.link.util.LinkConnectionInfo
+import net.minecraft.network.PacketHandler
+import net.minecraft.packet.AbstractPacket
+import net.minecraft.tileentity.TileEntityBase
+import net.modificationstation.stationapi.api.entity.player.PlayerHelper
+import net.modificationstation.stationapi.api.packet.PacketHelper
+import java.io.DataInputStream
+import java.io.DataOutputStream
+import java.util.*
+import java.util.stream.Stream
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.util.Arrays;
-import java.util.stream.Stream;
-
-public class RequestLinkConnectionsPacket extends AbstractPacket {
-    @Override
-    public void read(DataInputStream dataInputStream) {
-
+class RequestLinkConnectionsPacket : AbstractPacket() {
+    override fun read(dataInputStream: DataInputStream) {}
+    override fun write(dataOutputStream: DataOutputStream) {}
+    override fun apply(packetHandler: PacketHandler?) {
+        val player = PlayerHelper.getPlayerFromPacketHandler(packetHandler)
+        with(accessing[player]) {
+            this?.sendUpdatePacket(player)
+        }
     }
 
-    @Override
-    public void write(DataOutputStream dataOutputStream) {
-
-    }
-
-    @Override
-    public void apply(PacketHandler packetHandler) {
-        var player = PlayerHelper.getPlayerFromPacketHandler(packetHandler);
-        var terminal = Link.accessing.get(player);
-        PacketHelper.sendTo(
-                player, new LinkConnectionsPacket(
-                        ((Stream<HasLinkInfo>) (Object) Arrays.stream(terminal.getTileEntities()))
-                                .map(HasLinkInfo::getLinkConnectionInfo)
-                                .toArray(LinkConnectionInfo[]::new)
-                )
-        );
-    }
-
-    @Override
-    public int length() {
-        return 0;
+    override fun length(): Int {
+        return 0
     }
 }

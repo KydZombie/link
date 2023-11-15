@@ -1,7 +1,7 @@
-package com.github.kydzombie.link.block;
+package com.github.kydzombie.link.block
 
-import net.minecraft.inventory.InventoryBase;
+import net.minecraft.inventory.InventoryBase
 
-public interface CanFindDoubleChest {
-    public InventoryBase findInventory();
+interface CanFindDoubleChest {
+    fun findInventory(): InventoryBase?
 }
