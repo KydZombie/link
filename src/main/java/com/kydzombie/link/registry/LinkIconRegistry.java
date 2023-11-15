@@ -1,6 +1,6 @@
-package com.github.kydzombie.link.registry;
+package com.kydzombie.link.registry;
 
-import com.github.kydzombie.link.Link;
+import com.kydzombie.link.Link;
 import com.mojang.serialization.Lifecycle;
 import net.modificationstation.stationapi.api.registry.Registries;
 import net.modificationstation.stationapi.api.registry.Registry;

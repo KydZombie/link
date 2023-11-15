@@ -1,7 +1,7 @@
-package com.github.kydzombie.link.block;
+package com.kydzombie.link.block;
 
-import com.github.kydzombie.link.Link;
-import com.github.kydzombie.link.util.LinkConnectionInfo;
+import com.kydzombie.link.Link;
+import com.kydzombie.link.util.LinkConnectionInfo;
 import net.minecraft.entity.player.PlayerBase;
 import net.modificationstation.stationapi.api.registry.Identifier;
 import org.lwjgl.util.Color;

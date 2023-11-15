@@ -18,13 +18,13 @@
     "stationapi:event_bus": [
       {
         "adapter": "kotlin",
-        "value": "com.github.kydzombie.link.Link"
+        "value": "com.kydzombie.link.Link"
       }
     ],
     "stationapi:event_bus_client": [
       {
         "adapter": "kotlin",
-        "value": "com.github.kydzombie.link.LinkClient"
+        "value": "com.kydzombie.link.LinkClient"
       }
     ],
     "stationapi:event_bus_server": [
