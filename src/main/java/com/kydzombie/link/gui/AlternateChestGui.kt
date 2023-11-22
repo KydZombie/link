@@ -23,7 +23,7 @@ class AlternateChestGui(player: PlayerBase, private val inventory: InventoryBase
     }
 
     override fun renderForeground() {
-        textManager.drawText((inventory as HasLinkInfo).`link$getLinkName`(), 8, 6, 4210752)
+        textManager.drawText((inventory as HasLinkInfo).linkName, 8, 6, 4210752)
         textManager.drawText(playerInventory.containerName, 8, containerHeight - 96 + 2, 4210752)
     }
 

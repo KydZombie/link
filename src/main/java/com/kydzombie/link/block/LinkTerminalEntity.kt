@@ -42,7 +42,7 @@ class LinkTerminalEntity : TileEntityBase(), InventoryBase {
                     }
                     if (connections.contains(entity)) continue
                     if (entity is TileEntityChest && entity is CanFindDoubleChest) {
-                        val found = entity.`link$findInventory`()
+                        val found = entity.findInventory()
                         if (found is DoubleChest) {
                             val left = (found as DoubleChestAccessor).getLeft() as TileEntityBase
                             if (!connections.contains(left)) {
@@ -101,7 +101,7 @@ class LinkTerminalEntity : TileEntityBase(), InventoryBase {
                 val entity = Link.linkConnector.getConnectedTo(level, connectorPos.x, connectorPos.y, connectorPos.z)
                 if (entity == null || connections.contains(entity)) continue
                 if (entity is TileEntityChest) {
-                    val found = (entity as CanFindDoubleChest).`link$findInventory`()
+                    val found = (entity as CanFindDoubleChest).findInventory()
                     if (found is DoubleChest) {
                         val left = (found as DoubleChestAccessor).getLeft() as TileEntityBase
                         if (!connections.contains(left)) {

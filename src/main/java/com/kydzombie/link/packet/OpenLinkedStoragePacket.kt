@@ -44,7 +44,7 @@ class OpenLinkedStoragePacket : AbstractPacket, IdentifiablePacket {
         val player = PlayerHelper.getPlayerFromPacketHandler(packetHandler)
         accessing[player]?.tileEntities?.let { entities ->
             if (entities.size > index) {
-                (entities[index] as HasLinkInfo).`link$openLinkMenu`(player)
+                (entities[index] as HasLinkInfo).openLinkMenu(player)
             }
         }
     }

@@ -34,7 +34,7 @@ class LinkCard(identifier: Identifier) : TemplateItem(identifier), CustomTooltip
                     pos.put("z", entity.z)
                     itemInstance.stationNbt.put("pos", pos)
                     itemInstance.stationNbt.put("linked", true)
-                    itemInstance.stationNbt.put("entity_name", entity.`link$getLinkName`())
+                    itemInstance.stationNbt.put("entity_name", entity.linkName)
                 }
                 return true
             }
