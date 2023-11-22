@@ -34,27 +34,27 @@ public abstract class LinkDoubleChestMixin implements HasLinkInfo, InventoryBase
     }
 
     @Override
-    public String link$getLinkName() {
-        return ((HasLinkInfo) left).link$getLinkName();
+    public String getLinkName() {
+        return ((HasLinkInfo) left).getLinkName();
     }
 
     @Override
-    public void link$setLinkName(String name) {
-        ((HasLinkInfo) left).link$setLinkName(name);
+    public void setLinkName(String name) {
+        ((HasLinkInfo) left).setLinkName(name);
     }
 
     @Override
-    public Color link$getColor() {
-        return ((HasLinkInfo) left).link$getColor();
+    public Color getLinkColor() {
+        return ((HasLinkInfo) left).getLinkColor();
     }
 
     @Override
-    public void link$setColor(Color color) {
-        ((HasLinkInfo) left).link$setColor(color);
+    public void setLinkColor(Color color) {
+        ((HasLinkInfo) left).setLinkColor(color);
     }
 
     @Override
-    public void link$openLinkMenu(PlayerBase player) {
+    public void openLinkMenu(PlayerBase player) {
         GuiHelper.openGUI(player, Link.NAMESPACE.id("alternate_double_chest"), this, new AlternateChestStorage(player.inventory, this));
     }
 }

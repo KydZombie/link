@@ -27,8 +27,8 @@ public abstract class LinkChestEntityMixin extends TileEntityBase implements Has
     private String linkName = "Chest";
 
     @Override
-    public Identifier link$getLinkIconId() {
-        var inventory = link$findInventory();
+    public Identifier getLinkIconId() {
+        var inventory = findInventory();
         if (inventory instanceof DoubleChest) {
             return Link.NAMESPACE.id("double_chest");
         } else {
@@ -37,7 +37,7 @@ public abstract class LinkChestEntityMixin extends TileEntityBase implements Has
     }
 
     @Override
-    public InventoryBase link$findInventory() {
+    public InventoryBase findInventory() {
         var id = level.getTileId(x, y, z);
 
         InventoryBase chestEntity = (InventoryBase) level.getTileEntity(x, y, z);
@@ -56,22 +56,22 @@ public abstract class LinkChestEntityMixin extends TileEntityBase implements Has
     }
 
     @Override
-    public void link$openLinkMenu(PlayerBase player) {
-        var inventory = link$findInventory();
+    public void openLinkMenu(PlayerBase player) {
+        var inventory = findInventory();
         if (inventory instanceof DoubleChest) {
-            ((HasLinkInfo) inventory).link$openLinkMenu(player);
+            ((HasLinkInfo) inventory).openLinkMenu(player);
         } else {
             GuiHelper.openGUI(player, Link.NAMESPACE.id("alternate_chest"), inventory, new AlternateChestStorage(player.inventory, inventory));
         }
     }
 
     @Override
-    public String link$getLinkName() {
+    public String getLinkName() {
         return linkName;
     }
 
     @Override
-    public void link$setLinkName(String name) {
+    public void setLinkName(String name) {
         linkName = name;
     }
 
@@ -79,7 +79,7 @@ public abstract class LinkChestEntityMixin extends TileEntityBase implements Has
     private Color color;
 
     @Override
-    public Color link$getColor() {
+    public Color getLinkColor() {
         if (color == null) {
             var rand = new Random();
             color = new Color(rand.nextInt(255), rand.nextInt(255), rand.nextInt(255));
@@ -88,7 +88,7 @@ public abstract class LinkChestEntityMixin extends TileEntityBase implements Has
     }
 
     @Override
-    public void link$setColor(Color color) {
+    public void setLinkColor(Color color) {
         this.color = color;
     }
 
@@ -102,7 +102,7 @@ public abstract class LinkChestEntityMixin extends TileEntityBase implements Has
     @Inject(method = "writeIdentifyingData(Lnet/minecraft/util/io/CompoundTag;)V", at = @At("TAIL"))
     private void injectWrite(CompoundTag tag, CallbackInfo ci) {
         var colorTag = new CompoundTag();
-        var color = link$getColor();
+        var color = getLinkColor();
         colorTag.put("r", color.getRedByte());
         colorTag.put("g", color.getGreenByte());
         colorTag.put("b", color.getBlueByte());

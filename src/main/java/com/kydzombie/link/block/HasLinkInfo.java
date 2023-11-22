@@ -7,21 +7,21 @@ import net.modificationstation.stationapi.api.util.Identifier;
 import org.lwjgl.util.Color;
 
 public interface HasLinkInfo {
-    String link$getLinkName();
+    String getLinkName();
 
-    void link$setLinkName(String name);
+    void setLinkName(String name);
 
-    Color link$getColor();
+    Color getLinkColor();
 
-    void link$setColor(Color color);
+    void setLinkColor(Color color);
 
-    void link$openLinkMenu(PlayerBase player);
+    void openLinkMenu(PlayerBase player);
 
-    default Identifier link$getLinkIconId() {
+    default Identifier getLinkIconId() {
         return Link.NAMESPACE.id("unknown");
     }
 
     default LinkConnectionInfo getLinkConnectionInfo() {
-        return new LinkConnectionInfo(link$getLinkIconId(), link$getLinkName(), link$getColor());
+        return new LinkConnectionInfo(getLinkIconId(), getLinkName(), getLinkColor());
     }
 }
