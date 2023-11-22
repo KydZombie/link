@@ -64,9 +64,9 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.jetbrains:annotations:24.0.0'
+    implementation 'org.jetbrains:annotations:24.0.0'
 
-	// To change the versions see the gradle.properties file
+    // To change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings "net.glasslauncher:bin:${project.yarn_mappings}"
     modImplementation "babric:fabric-loader:${project.loader_version}"
@@ -76,6 +76,7 @@ dependencies {
 
     implementation "blue.endless:jankson:1.2.1"
 
+    include "io.michaelrocks.bimap:bimap:1.1.0"
     implementation "io.michaelrocks.bimap:bimap:1.1.0"
 
     modImplementation "net.modificationstation:StationAPI:${project.stapi_version}"
