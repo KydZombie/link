@@ -7,8 +7,8 @@ import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.client.Minecraft
 import net.minecraft.network.PacketHandler
 import net.minecraft.packet.AbstractPacket
-import net.modificationstation.stationapi.api.packet.IdentifiablePacket
-import net.modificationstation.stationapi.api.registry.Identifier
+import net.modificationstation.stationapi.api.network.packet.IdentifiablePacket
+import net.modificationstation.stationapi.api.util.Identifier
 import org.lwjgl.util.Color
 import java.io.DataInputStream
 import java.io.DataOutputStream
@@ -30,7 +30,8 @@ class LinkConnectionsPacket() : AbstractPacket(), IdentifiablePacket {
                     dataInputStream.readByte(),
                     dataInputStream.readByte(),
                     dataInputStream.readByte()
-                ))
+                )
+            )
         }
     }
 
@@ -61,6 +62,6 @@ class LinkConnectionsPacket() : AbstractPacket(), IdentifiablePacket {
     }
 
     override fun getId(): Identifier {
-        return Link.MOD_ID.id("link_connections")
+        return Link.NAMESPACE.id("link_connections")
     }
 }

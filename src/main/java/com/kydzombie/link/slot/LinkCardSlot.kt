@@ -7,6 +7,6 @@ import net.minecraft.item.ItemInstance
 
 class LinkCardSlot(inventory: InventoryBase, invSlot: Int, x: Int, y: Int) : Slot(inventory, invSlot, x, y) {
     override fun canInsert(itemInstance: ItemInstance): Boolean {
-        return itemInstance.type === Link.LINK_CARD && itemInstance.stationNBT.getBoolean("linked")
+        return itemInstance.type === Link.linkCard && itemInstance.stationNbt.getBoolean("linked")
     }
 }

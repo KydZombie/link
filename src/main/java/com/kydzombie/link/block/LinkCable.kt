@@ -7,18 +7,18 @@ import net.minecraft.level.Level
 import net.minecraft.util.maths.Box
 import net.modificationstation.stationapi.api.block.BlockState
 import net.modificationstation.stationapi.api.item.ItemPlacementContext
-import net.modificationstation.stationapi.api.registry.Identifier
 import net.modificationstation.stationapi.api.state.StateManager
 import net.modificationstation.stationapi.api.state.property.BooleanProperty
-import net.modificationstation.stationapi.api.template.block.TemplateBlockBase
+import net.modificationstation.stationapi.api.template.block.TemplateBlock
+import net.modificationstation.stationapi.api.util.Identifier
 import net.modificationstation.stationapi.api.util.math.Direction
 import net.modificationstation.stationapi.api.world.BlockStateView
 
-open class LinkCable constructor(
+open class LinkCable(
     identifier: Identifier,
     material: Material,
     cableWidth: Float = .4f
-) : TemplateBlockBase(identifier, material) {
+) : TemplateBlock(identifier, material) {
     val minSize = .5f - cableWidth / 2
     val maxSize = .5f + cableWidth / 2
 

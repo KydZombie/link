@@ -2,7 +2,7 @@ package com.kydzombie.link.util
 
 import com.kydzombie.link.registry.LinkIcon
 import com.kydzombie.link.registry.LinkIconRegistry
-import net.modificationstation.stationapi.api.registry.Identifier
+import net.modificationstation.stationapi.api.util.Identifier
 import org.lwjgl.util.Color
 
 @JvmRecord

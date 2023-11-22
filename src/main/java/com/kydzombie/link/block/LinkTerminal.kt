@@ -12,10 +12,10 @@ import net.minecraft.tileentity.TileEntityBase
 import net.modificationstation.stationapi.api.block.BlockState
 import net.modificationstation.stationapi.api.gui.screen.container.GuiHelper
 import net.modificationstation.stationapi.api.item.ItemPlacementContext
-import net.modificationstation.stationapi.api.registry.Identifier
 import net.modificationstation.stationapi.api.state.StateManager
 import net.modificationstation.stationapi.api.state.property.EnumProperty
 import net.modificationstation.stationapi.api.template.block.TemplateBlockWithEntity
+import net.modificationstation.stationapi.api.util.Identifier
 import net.modificationstation.stationapi.api.util.math.Direction
 import java.util.*
 
@@ -47,7 +47,7 @@ class LinkTerminal(identifier: Identifier, material: Material) : TemplateBlockWi
             val terminal = level.getTileEntity(x, y, z) as LinkTerminalEntity
             if (!level.isServerSide) {
                 val storage = LinkTerminalStorage(player, terminal)
-                GuiHelper.openGUI(player, Link.MOD_ID.id("link_terminal"), terminal, storage)
+                GuiHelper.openGUI(player, Link.NAMESPACE.id("link_terminal"), terminal, storage)
                 accessing.forcePut(player, terminal)
                 terminal.sendUpdatePacket()
             }

@@ -14,14 +14,14 @@ import net.minecraft.tileentity.TileEntityBase
 import net.minecraft.tileentity.TileEntityChest
 import net.minecraft.util.io.CompoundTag
 import net.minecraft.util.io.ListTag
-import net.modificationstation.stationapi.api.packet.PacketHelper
+import net.modificationstation.stationapi.api.network.packet.PacketHelper
 import net.modificationstation.stationapi.api.util.math.Vec3i
-import java.util.*
 
 class LinkTerminalEntity : TileEntityBase(), InventoryBase {
     private var inventory = arrayOfNulls<ItemInstance>(6)
     private val connections: Array<LinkConnectionInfo>
-        get() = tileEntities.map { tileEntity -> (tileEntity as HasLinkInfo).linkConnectionInfo }.filterIsInstance<LinkConnectionInfo>().toTypedArray()
+        get() = tileEntities.map { tileEntity -> (tileEntity as HasLinkInfo).linkConnectionInfo }
+            .filterIsInstance<LinkConnectionInfo>().toTypedArray()
 
     val tileEntities: Array<TileEntityBase>
         get() {
@@ -31,8 +31,8 @@ class LinkTerminalEntity : TileEntityBase(), InventoryBase {
                 return emptyArray()
             }
             for (itemInstance in inventory) {
-                if (itemInstance == null || itemInstance.type !== Link.LINK_CARD) continue
-                val nbt = itemInstance.stationNBT
+                if (itemInstance == null || itemInstance.type !== Link.linkCard) continue
+                val nbt = itemInstance.stationNbt
                 if (nbt.getBoolean("linked")) {
                     val pos = nbt.getCompoundTag("pos")
                     val entity = level.getTileEntity(pos.getInt("x"), pos.getInt("y"), pos.getInt("z"))
@@ -42,7 +42,7 @@ class LinkTerminalEntity : TileEntityBase(), InventoryBase {
                     }
                     if (connections.contains(entity)) continue
                     if (entity is TileEntityChest && entity is CanFindDoubleChest) {
-                        val found = entity.findInventory()
+                        val found = entity.`link$findInventory`()
                         if (found is DoubleChest) {
                             val left = (found as DoubleChestAccessor).getLeft() as TileEntityBase
                             if (!connections.contains(left)) {
@@ -83,7 +83,8 @@ class LinkTerminalEntity : TileEntityBase(), InventoryBase {
                     Vec3i(cablePos.x, cablePos.y, cablePos.z + 1), Vec3i(cablePos.x, cablePos.y, cablePos.z - 1)
                 )
                 for (relativePos in relativeBlocks) {
-                    val block = BlockBase.BY_ID[level.getTileId(relativePos.x, relativePos.y, relativePos.z)] ?: continue
+                    val block =
+                        BlockBase.BY_ID[level.getTileId(relativePos.x, relativePos.y, relativePos.z)] ?: continue
                     if (block is LinkCable) {
                         if (!cablesToCheck.contains(relativePos) && !cablesChecked.contains(relativePos)) {
                             cablesToCheck.add(Vec3i(relativePos.x, relativePos.y, relativePos.z))
@@ -97,10 +98,10 @@ class LinkTerminalEntity : TileEntityBase(), InventoryBase {
                 cablesToCheck.removeAt(0)
             }
             for (connectorPos in connectors) {
-                val entity = Link.LINK_CONNECTOR.getConnectedTo(level, connectorPos.x, connectorPos.y, connectorPos.z)
+                val entity = Link.linkConnector.getConnectedTo(level, connectorPos.x, connectorPos.y, connectorPos.z)
                 if (entity == null || connections.contains(entity)) continue
                 if (entity is TileEntityChest) {
-                    val found = (entity as CanFindDoubleChest).findInventory()
+                    val found = (entity as CanFindDoubleChest).`link$findInventory`()
                     if (found is DoubleChest) {
                         val left = (found as DoubleChestAccessor).getLeft() as TileEntityBase
                         if (!connections.contains(left)) {

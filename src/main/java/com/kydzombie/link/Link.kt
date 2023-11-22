@@ -16,28 +16,26 @@ import io.michaelrocks.bimap.HashBiMap
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.mine_diver.unsafeevents.listener.EventListener
-import net.minecraft.block.BlockBase
 import net.minecraft.block.material.Material
 import net.minecraft.client.gui.screen.ScreenBase
 import net.minecraft.entity.Living
 import net.minecraft.entity.player.PlayerBase
 import net.minecraft.inventory.DoubleChest
 import net.minecraft.inventory.InventoryBase
-import net.minecraft.item.ItemBase
 import net.minecraft.item.ItemInstance
 import net.minecraft.level.BlockView
 import net.minecraft.tileentity.TileEntityChest
 import net.modificationstation.stationapi.api.StationAPI
 import net.modificationstation.stationapi.api.client.event.render.model.ItemModelPredicateProviderRegistryEvent
+import net.modificationstation.stationapi.api.event.block.entity.BlockEntityRegisterEvent
 import net.modificationstation.stationapi.api.event.mod.PostInitEvent
-import net.modificationstation.stationapi.api.event.packet.PacketRegisterEvent
+import net.modificationstation.stationapi.api.event.network.packet.PacketRegisterEvent
 import net.modificationstation.stationapi.api.event.registry.BlockRegistryEvent
 import net.modificationstation.stationapi.api.event.registry.GuiHandlerRegistryEvent
 import net.modificationstation.stationapi.api.event.registry.ItemRegistryEvent
-import net.modificationstation.stationapi.api.event.tileentity.TileEntityRegisterEvent
 import net.modificationstation.stationapi.api.mod.entrypoint.Entrypoint
-import net.modificationstation.stationapi.api.packet.IdentifiablePacket
-import net.modificationstation.stationapi.api.registry.ModID
+import net.modificationstation.stationapi.api.network.packet.IdentifiablePacket
+import net.modificationstation.stationapi.api.util.Namespace
 import org.apache.logging.log4j.Logger
 import org.lwjgl.util.Color
 import uk.co.benjiweber.expressions.tuple.BiTuple
@@ -45,8 +43,8 @@ import java.util.function.BiFunction
 import java.util.function.Supplier
 
 object Link {
-    @Entrypoint.ModID
-    lateinit var MOD_ID: ModID
+    @Entrypoint.Namespace
+    lateinit var NAMESPACE: Namespace
 
     @Entrypoint.Logger("Link")
     lateinit var LOGGER: Logger
@@ -54,36 +52,36 @@ object Link {
     @JvmStatic
     val accessing = HashBiMap<PlayerBase, LinkTerminalEntity>()
 
-    lateinit var LINK_CARD: ItemBase
+    lateinit var linkCard: LinkCard
 
     @EventListener
     private fun registerItems(event: ItemRegistryEvent) {
-        LINK_CARD = LinkCard(MOD_ID.id("link_card"))
+        linkCard = LinkCard(NAMESPACE.id("link_card"))
     }
 
-    private lateinit var LINK_TERMINAL: BlockBase
-    private lateinit var LINK_CABLE: BlockBase
-    lateinit var LINK_CONNECTOR: LinkConnector
+    lateinit var linkTerminal: LinkTerminal
+    lateinit var linkCable: LinkCable
+    lateinit var linkConnector: LinkConnector
 
     @EventListener
     private fun registerBlocks(event: BlockRegistryEvent) {
-        LINK_TERMINAL = LinkTerminal(MOD_ID.id("link_terminal"), Material.METAL)
-        LINK_CABLE = LinkCable(MOD_ID.id("link_cable"), Material.METAL)
-        LINK_CONNECTOR = LinkConnector(MOD_ID.id("link_connector"), Material.METAL)
+        linkTerminal = LinkTerminal(NAMESPACE.id("link_terminal"), Material.METAL)
+        linkCable = LinkCable(NAMESPACE.id("link_cable"), Material.METAL)
+        linkConnector = LinkConnector(NAMESPACE.id("link_connector"), Material.METAL)
     }
 
     @EventListener
-    private fun registerTileEntities(event: TileEntityRegisterEvent) {
-        event.register(LinkTerminalEntity::class.java, MOD_ID.id("link_terminal").toString())
+    private fun registerTileEntities(event: BlockEntityRegisterEvent) {
+        event.register(LinkTerminalEntity::class.java, NAMESPACE.id("link_terminal").toString())
     }
 
     @EventListener
     private fun registerPackets(event: PacketRegisterEvent) {
-        IdentifiablePacket.create(
-            MOD_ID.id("link_connections"), true, false
+        IdentifiablePacket.register(
+            NAMESPACE.id("link_connections"), true, false
         ) { LinkConnectionsPacket() }
-        IdentifiablePacket.create(
-            MOD_ID.id("open_linked_storage"), false, true
+        IdentifiablePacket.register(
+            NAMESPACE.id("open_linked_storage"), false, true
         ) { OpenLinkedStoragePacket() }
     }
 }
@@ -97,9 +95,9 @@ object LinkClient {
     @EventListener
     private fun registerItemModelPredicates(event: ItemModelPredicateProviderRegistryEvent) {
         event.registry.register(
-            Link.LINK_CARD, Link.MOD_ID.id("linked")
+            Link.linkCard, Link.NAMESPACE.id("linked")
         ) { itemInstance: ItemInstance, _: BlockView?, _: Living?, _: Int ->
-            if (itemInstance.stationNBT.getBoolean("linked")) 1f else 0f
+            if (itemInstance.stationNbt.getBoolean("linked")) 1f else 0f
         }
     }
 
@@ -110,15 +108,15 @@ object LinkClient {
 
     @EventListener
     private fun registerIcons(event: LinkIconRegistryEvent) {
-        event.registerLinkIcon(Link.MOD_ID.id("unknown"), LinkIconRegistry.UNKNOWN_ICON)
-        event.registerLinkIcon(Link.MOD_ID.id("chest"), LinkIcon(176, 66))
-        event.registerLinkIcon(Link.MOD_ID.id("double_chest"), LinkIcon(176, 88))
+        event.registerLinkIcon(Link.NAMESPACE.id("unknown"), LinkIconRegistry.UNKNOWN_ICON)
+        event.registerLinkIcon(Link.NAMESPACE.id("chest"), LinkIcon(176, 66))
+        event.registerLinkIcon(Link.NAMESPACE.id("double_chest"), LinkIcon(176, 88))
     }
 
     @EventListener
     private fun registerGuiHandler(event: GuiHandlerRegistryEvent) {
         event.registry.registerValueNoMessage(
-            Link.MOD_ID.id("link_terminal"),
+            Link.NAMESPACE.id("link_terminal"),
             BiTuple.of<BiFunction<PlayerBase, InventoryBase, ScreenBase>, Supplier<InventoryBase>>(
                 BiFunction<PlayerBase, InventoryBase, ScreenBase> { player: PlayerBase, entity: InventoryBase ->
                     openLinkTerminal(
@@ -129,7 +127,7 @@ object LinkClient {
                 Supplier<InventoryBase> { LinkTerminalEntity() })
         )
         event.registry.registerValueNoMessage(
-            Link.MOD_ID.id("alternate_chest"),
+            Link.NAMESPACE.id("alternate_chest"),
             BiTuple.of<BiFunction<PlayerBase, InventoryBase, ScreenBase>, Supplier<InventoryBase>>(
                 BiFunction<PlayerBase, InventoryBase, ScreenBase> { player: PlayerBase, entity: InventoryBase ->
                     openAlternateChestGui(
@@ -140,7 +138,7 @@ object LinkClient {
                 Supplier<InventoryBase> { TileEntityChest() })
         )
         event.registry.registerValueNoMessage(
-            Link.MOD_ID.id("alternate_double_chest"),
+            Link.NAMESPACE.id("alternate_double_chest"),
             BiTuple.of<BiFunction<PlayerBase, InventoryBase, ScreenBase>, Supplier<InventoryBase>>(
                 BiFunction<PlayerBase, InventoryBase, ScreenBase> { player: PlayerBase, entity: InventoryBase ->
                     openAlternateChestGui(

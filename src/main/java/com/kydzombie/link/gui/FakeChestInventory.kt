@@ -8,13 +8,13 @@ import org.lwjgl.util.Color
 
 class FakeChestInventory : HasLinkInfo, InventoryBase {
     var inventory = arrayOfNulls<ItemInstance>(27)
-    override fun getLinkName(): String = "Chest"
+    override fun `link$getLinkName`(): String = "Chest"
 
-    override fun setLinkName(name: String) = Unit
-    override fun getColor(): Color = Color.WHITE as Color
+    override fun `link$setLinkName`(name: String) = Unit
+    override fun `link$getColor`(): Color = Color.WHITE as Color
 
-    override fun setColor(color: Color) = Unit
-    override fun openLinkMenu(player: PlayerBase) = Unit
+    override fun `link$setColor`(color: Color) = Unit
+    override fun `link$openLinkMenu`(player: PlayerBase) = Unit
     override fun getInventorySize(): Int = 27
 
     override fun getInventoryItem(i: Int): ItemInstance? = inventory[i]

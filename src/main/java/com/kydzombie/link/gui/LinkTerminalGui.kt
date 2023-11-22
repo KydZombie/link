@@ -8,7 +8,7 @@ import com.kydzombie.link.util.LinkConnectionInfo
 import com.kydzombie.link.util.Vector2i
 import net.minecraft.client.gui.screen.container.ContainerBase
 import net.minecraft.entity.player.PlayerBase
-import net.modificationstation.stationapi.api.packet.PacketHelper
+import net.modificationstation.stationapi.api.network.packet.PacketHelper
 import org.lwjgl.opengl.GL11
 import java.awt.Rectangle
 

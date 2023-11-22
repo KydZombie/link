@@ -11,7 +11,7 @@ import net.minecraft.tileentity.TileEntityBase;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.io.CompoundTag;
 import net.modificationstation.stationapi.api.gui.screen.container.GuiHelper;
-import net.modificationstation.stationapi.api.registry.Identifier;
+import net.modificationstation.stationapi.api.util.Identifier;
 import org.lwjgl.util.Color;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -27,18 +27,17 @@ public abstract class LinkChestEntityMixin extends TileEntityBase implements Has
     private String linkName = "Chest";
 
     @Override
-    public Identifier getLinkIconId() {
-        var inventory = findInventory();
+    public Identifier link$getLinkIconId() {
+        var inventory = link$findInventory();
         if (inventory instanceof DoubleChest) {
-            return Link.MOD_ID.id("double_chest");
+            return Link.NAMESPACE.id("double_chest");
         } else {
-            return Link.MOD_ID.id("chest");
+            return Link.NAMESPACE.id("chest");
         }
     }
 
     @Override
-    public InventoryBase findInventory() {
-        ;
+    public InventoryBase link$findInventory() {
         var id = level.getTileId(x, y, z);
 
         InventoryBase chestEntity = (InventoryBase) level.getTileEntity(x, y, z);
@@ -57,22 +56,22 @@ public abstract class LinkChestEntityMixin extends TileEntityBase implements Has
     }
 
     @Override
-    public void openLinkMenu(PlayerBase player) {
-        var inventory = findInventory();
+    public void link$openLinkMenu(PlayerBase player) {
+        var inventory = link$findInventory();
         if (inventory instanceof DoubleChest) {
-            ((HasLinkInfo) inventory).openLinkMenu(player);
+            ((HasLinkInfo) inventory).link$openLinkMenu(player);
         } else {
-            GuiHelper.openGUI(player, Link.MOD_ID.id("alternate_chest"), inventory, new AlternateChestStorage(player.inventory, inventory));
+            GuiHelper.openGUI(player, Link.NAMESPACE.id("alternate_chest"), inventory, new AlternateChestStorage(player.inventory, inventory));
         }
     }
 
     @Override
-    public String getLinkName() {
+    public String link$getLinkName() {
         return linkName;
     }
 
     @Override
-    public void setLinkName(String name) {
+    public void link$setLinkName(String name) {
         linkName = name;
     }
 
@@ -80,7 +79,7 @@ public abstract class LinkChestEntityMixin extends TileEntityBase implements Has
     private Color color;
 
     @Override
-    public Color getColor() {
+    public Color link$getColor() {
         if (color == null) {
             var rand = new Random();
             color = new Color(rand.nextInt(255), rand.nextInt(255), rand.nextInt(255));
@@ -89,7 +88,7 @@ public abstract class LinkChestEntityMixin extends TileEntityBase implements Has
     }
 
     @Override
-    public void setColor(Color color) {
+    public void link$setColor(Color color) {
         this.color = color;
     }
 
@@ -103,7 +102,7 @@ public abstract class LinkChestEntityMixin extends TileEntityBase implements Has
     @Inject(method = "writeIdentifyingData(Lnet/minecraft/util/io/CompoundTag;)V", at = @At("TAIL"))
     private void injectWrite(CompoundTag tag, CallbackInfo ci) {
         var colorTag = new CompoundTag();
-        var color = getColor();
+        var color = link$getColor();
         colorTag.put("r", color.getRedByte());
         colorTag.put("g", color.getGreenByte());
         colorTag.put("b", color.getBlueByte());

@@ -6,8 +6,8 @@ import com.kydzombie.link.block.HasLinkInfo
 import net.minecraft.network.PacketHandler
 import net.minecraft.packet.AbstractPacket
 import net.modificationstation.stationapi.api.entity.player.PlayerHelper
-import net.modificationstation.stationapi.api.packet.IdentifiablePacket
-import net.modificationstation.stationapi.api.registry.Identifier
+import net.modificationstation.stationapi.api.network.packet.IdentifiablePacket
+import net.modificationstation.stationapi.api.util.Identifier
 import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.io.IOException
@@ -44,7 +44,7 @@ class OpenLinkedStoragePacket : AbstractPacket, IdentifiablePacket {
         val player = PlayerHelper.getPlayerFromPacketHandler(packetHandler)
         accessing[player]?.tileEntities?.let { entities ->
             if (entities.size > index) {
-                (entities[index] as HasLinkInfo).openLinkMenu(player)
+                (entities[index] as HasLinkInfo).`link$openLinkMenu`(player)
             }
         }
     }
@@ -54,6 +54,6 @@ class OpenLinkedStoragePacket : AbstractPacket, IdentifiablePacket {
     }
 
     override fun getId(): Identifier {
-        return Link.MOD_ID.id("open_linked_storage")
+        return Link.NAMESPACE.id("open_linked_storage")
     }
 }
