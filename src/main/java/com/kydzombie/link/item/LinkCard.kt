@@ -56,10 +56,8 @@ class LinkCard(identifier: Identifier) : TemplateItem(identifier), CustomTooltip
             } else {
                 arrayOf(
                     originalTooltip,
-//                    Colours.RED.toString() +
-                    "Invalid Tile Entity!",
-//                    Colours.RED.toString() +
-                    "%d, %d, %d".format(pos.getInt("x"), pos.getInt("y"), pos.getInt("z"))
+                    "§cInvalid Tile Entity!",
+                    "§c%d, %d, %d".format(pos.getInt("x"), pos.getInt("y"), pos.getInt("z"))
                 )
             }
         } else {
