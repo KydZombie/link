@@ -99,7 +99,6 @@ public abstract class LinkChestEntityMixin extends TileEntityBase implements Has
             color = new Color(colorTag.getByte("r"), colorTag.getByte("g"), colorTag.getByte("b"));
         }
         if (tag.containsKey("link:name")) {
-            System.out.println("Reading name");
             linkName = tag.getString("link:name");
         }
     }

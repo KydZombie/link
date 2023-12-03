@@ -32,7 +32,6 @@ class EditLinkGui(player: PlayerBase, dummyInventory: DummyEditLinkEntity) : Con
         containerHeight = 222
 
         nameBox = Textbox(this, this.textManager, 0, 0, 64, 20, linkInfo.name).apply {
-            println("Is text null? ${textManager == null}")
             selected = true
             setMaxLength(16)
         }
