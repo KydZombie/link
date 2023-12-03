@@ -23,6 +23,7 @@ class LinkConnectionsPacket() : AbstractPacket(), IdentifiablePacket {
 
     override fun read(dataInputStream: DataInputStream) {
         connections = Array(dataInputStream.readInt()) {
+            LinkConnectionInfo.createFrom(dataInputStream)
             LinkConnectionInfo(
                 Identifier.of(readString(dataInputStream, 100)),
                 readString(dataInputStream, 100),
@@ -37,13 +38,7 @@ class LinkConnectionsPacket() : AbstractPacket(), IdentifiablePacket {
 
     override fun write(dataOutputStream: DataOutputStream) {
         dataOutputStream.writeInt(connections.size)
-        for (connection in connections) {
-            writeString(connection.type.toString(), dataOutputStream)
-            writeString(connection.name, dataOutputStream)
-            dataOutputStream.write(connection.color.redByte.toInt())
-            dataOutputStream.write(connection.color.greenByte.toInt())
-            dataOutputStream.write(connection.color.blueByte.toInt())
-        }
+        for (connection in connections) connection.writeTo(dataOutputStream)
     }
 
     override fun apply(arg: PacketHandler?) {
@@ -53,11 +48,7 @@ class LinkConnectionsPacket() : AbstractPacket(), IdentifiablePacket {
 
     override fun length(): Int {
         var size = 4
-        for (connection in connections) {
-            size += connection.type.toString().length
-            size += connection.name.length
-            size += 3
-        }
+        for (connection in connections) size += connection.size()
         return size
     }
 

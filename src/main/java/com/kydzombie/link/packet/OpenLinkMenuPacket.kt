@@ -3,8 +3,10 @@ package com.kydzombie.link.packet
 import com.kydzombie.link.Link
 import com.kydzombie.link.Link.accessing
 import com.kydzombie.link.block.HasLinkInfo
+import com.kydzombie.link.block.LinkTerminalEntity
 import net.minecraft.network.PacketHandler
 import net.minecraft.packet.AbstractPacket
+import net.minecraft.tileentity.TileEntityBase
 import net.modificationstation.stationapi.api.entity.player.PlayerHelper
 import net.modificationstation.stationapi.api.network.packet.IdentifiablePacket
 import net.modificationstation.stationapi.api.util.Identifier
@@ -12,7 +14,7 @@ import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.io.IOException
 
-class OpenLinkedStoragePacket : AbstractPacket, IdentifiablePacket {
+class OpenLinkMenuPacket : AbstractPacket, IdentifiablePacket {
     private var index = 0
     private var editMenu = false
 
@@ -42,9 +44,10 @@ class OpenLinkedStoragePacket : AbstractPacket, IdentifiablePacket {
 
     override fun apply(packetHandler: PacketHandler?) {
         val player = PlayerHelper.getPlayerFromPacketHandler(packetHandler)
-        accessing[player]?.tileEntities?.let { entities ->
-            if (entities.size > index) {
-                (entities[index] as HasLinkInfo).openLinkMenu(player)
+        (accessing[player] as? LinkTerminalEntity)?.tileEntities?.let { entities ->
+            (entities.getOrNull(index) as HasLinkInfo?)?.apply {
+                accessing.forcePut(player, this as TileEntityBase)
+                if (editMenu) openEditMenu(player) else openLinkMenu(player)
             }
         }
     }

@@ -132,7 +132,7 @@ class LinkTerminalEntity : TileEntityBase(), InventoryBase {
     }
 
     fun sendUpdatePacket() {
-        sendUpdatePacket(accessing.inverse[this])
+        accessing.inverse[this]?.let { sendUpdatePacket(it) }
     }
 
     override fun takeInventoryItem(i: Int, j: Int): ItemInstance? {

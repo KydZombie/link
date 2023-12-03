@@ -1,6 +1,6 @@
 package com.kydzombie.link.gui
 
-import com.kydzombie.link.LinkClient.currentlySelectedColor
+import com.kydzombie.link.LinkClient
 import com.kydzombie.link.block.HasLinkInfo
 import net.minecraft.client.gui.screen.container.ContainerBase
 import net.minecraft.entity.player.PlayerBase
@@ -29,7 +29,7 @@ class AlternateChestGui(player: PlayerBase, private val inventory: InventoryBase
 
     override fun renderContainerBackground(f: Float) {
         val var2 = minecraft.textureManager.getTextureId("/gui/container.png")
-        val color = currentlySelectedColor
+        val color = LinkClient.currentEntityData!!.color
         GL11.glColor4ub(color.redByte, color.greenByte, color.blueByte, color.alphaByte)
         minecraft.textureManager.bindTexture(var2)
         val var3 = (width - containerWidth) / 2

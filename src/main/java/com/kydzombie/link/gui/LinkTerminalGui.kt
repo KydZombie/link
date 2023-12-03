@@ -1,8 +1,7 @@
 package com.kydzombie.link.gui
 
-import com.kydzombie.link.LinkClient.currentlySelectedColor
 import com.kydzombie.link.block.LinkTerminalEntity
-import com.kydzombie.link.packet.OpenLinkedStoragePacket
+import com.kydzombie.link.packet.OpenLinkMenuPacket
 import com.kydzombie.link.slot.LinkCardSlot
 import com.kydzombie.link.util.LinkConnectionInfo
 import com.kydzombie.link.util.Vector2i
@@ -189,11 +188,11 @@ class LinkTerminalGui(private val player: PlayerBase, private val entity: LinkTe
                 val buttonY = renderY + CORNER_OFFSET.y + i / maxPerRow * (BUTTON_SIZE + BUTTON_MARGIN)
                 if (isHoveringButton(buttonX, buttonY)) {
                     if (mouseButton == 0) {
-                        currentlySelectedColor = connection.color
-                        PacketHelper.send(OpenLinkedStoragePacket(i, false))
+                        connection.setCurrentEntity()
+                        PacketHelper.send(OpenLinkMenuPacket(i, false))
                     } else if (mouseButton == 1) {
-//                        PacketHelper.send(new OpenLinkedStoragePacket(entity.x, entity.y, entity.z, i, true));
-                        // TODO Add name edit menu
+                        connection.setCurrentEntity()
+                        PacketHelper.send(OpenLinkMenuPacket(i, true))
                     }
                 }
             }

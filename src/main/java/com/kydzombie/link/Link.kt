@@ -1,17 +1,19 @@
 package com.kydzombie.link
 
-import com.kydzombie.link.block.LinkCable
-import com.kydzombie.link.block.LinkConnector
-import com.kydzombie.link.block.LinkTerminal
-import com.kydzombie.link.block.LinkTerminalEntity
+import com.kydzombie.link.block.*
 import com.kydzombie.link.gui.AlternateChestGui
+import com.kydzombie.link.gui.DummyEditLinkEntity
+import com.kydzombie.link.gui.EditLinkGui
 import com.kydzombie.link.gui.LinkTerminalGui
 import com.kydzombie.link.item.LinkCard
 import com.kydzombie.link.packet.LinkConnectionsPacket
-import com.kydzombie.link.packet.OpenLinkedStoragePacket
+import com.kydzombie.link.packet.OpenLinkMenuPacket
+import com.kydzombie.link.packet.RequestLinkConnectionsPacket
+import com.kydzombie.link.packet.UpdateLinkInfoPacket
 import com.kydzombie.link.registry.LinkIcon
 import com.kydzombie.link.registry.LinkIconRegistry
 import com.kydzombie.link.registry.LinkIconRegistryEvent
+import com.kydzombie.link.util.LinkConnectionInfo
 import io.michaelrocks.bimap.HashBiMap
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
@@ -24,6 +26,7 @@ import net.minecraft.inventory.DoubleChest
 import net.minecraft.inventory.InventoryBase
 import net.minecraft.item.ItemInstance
 import net.minecraft.level.BlockView
+import net.minecraft.tileentity.TileEntityBase
 import net.minecraft.tileentity.TileEntityChest
 import net.modificationstation.stationapi.api.StationAPI
 import net.modificationstation.stationapi.api.client.event.render.model.ItemModelPredicateProviderRegistryEvent
@@ -37,7 +40,6 @@ import net.modificationstation.stationapi.api.mod.entrypoint.Entrypoint
 import net.modificationstation.stationapi.api.network.packet.IdentifiablePacket
 import net.modificationstation.stationapi.api.util.Namespace
 import org.apache.logging.log4j.Logger
-import org.lwjgl.util.Color
 import uk.co.benjiweber.expressions.tuple.BiTuple
 import java.util.function.BiFunction
 import java.util.function.Supplier
@@ -50,7 +52,7 @@ object Link {
     lateinit var LOGGER: Logger
 
     @JvmStatic
-    val accessing = HashBiMap<PlayerBase, LinkTerminalEntity>()
+    val accessing = HashBiMap<PlayerBase, TileEntityBase>()
 
     lateinit var linkCard: LinkCard
 
@@ -77,12 +79,15 @@ object Link {
 
     @EventListener
     private fun registerPackets(event: PacketRegisterEvent) {
+        IdentifiablePacket.register(NAMESPACE.id("link_connections"), true, false, ::LinkConnectionsPacket)
+        IdentifiablePacket.register(NAMESPACE.id("open_linked_storage"), false, true, ::OpenLinkMenuPacket)
         IdentifiablePacket.register(
-            NAMESPACE.id("link_connections"), true, false
-        ) { LinkConnectionsPacket() }
-        IdentifiablePacket.register(
-            NAMESPACE.id("open_linked_storage"), false, true
-        ) { OpenLinkedStoragePacket() }
+            NAMESPACE.id("request_link_connections"),
+            false,
+            true,
+            ::RequestLinkConnectionsPacket
+        )
+        IdentifiablePacket.register(NAMESPACE.id("update_link_info"), false, true, ::UpdateLinkInfoPacket)
     }
 }
 
@@ -90,7 +95,7 @@ object Link {
 @Environment(EnvType.CLIENT)
 object LinkClient {
     @JvmStatic
-    var currentlySelectedColor = Color.WHITE as Color
+    var currentEntityData: LinkConnectionInfo? = null
 
     @EventListener
     private fun registerItemModelPredicates(event: ItemModelPredicateProviderRegistryEvent) {
@@ -127,14 +132,21 @@ object LinkClient {
                 Supplier<InventoryBase> { LinkTerminalEntity() })
         )
         event.registry.registerValueNoMessage(
-            Link.NAMESPACE.id("alternate_chest"),
+            Link.NAMESPACE.id("edit_link"),
             BiTuple.of<BiFunction<PlayerBase, InventoryBase, ScreenBase>, Supplier<InventoryBase>>(
                 BiFunction<PlayerBase, InventoryBase, ScreenBase> { player: PlayerBase, entity: InventoryBase ->
-                    openAlternateChestGui(
+                    openLinkEditGui(
                         player,
-                        entity
+                        DummyEditLinkEntity(entity as HasLinkInfo)
                     )
                 },
+                Supplier<InventoryBase> { DummyEditLinkEntity(null) }
+            )
+        )
+        event.registry.registerValueNoMessage(
+            Link.NAMESPACE.id("alternate_chest"),
+            BiTuple.of<BiFunction<PlayerBase, InventoryBase, ScreenBase>, Supplier<InventoryBase>>(
+                BiFunction<PlayerBase, InventoryBase, ScreenBase>(::openAlternateChestGui),
                 Supplier<InventoryBase> { TileEntityChest() })
         )
         event.registry.registerValueNoMessage(
@@ -152,6 +164,10 @@ object LinkClient {
 
     private fun openLinkTerminal(player: PlayerBase, entity: InventoryBase): ScreenBase {
         return LinkTerminalGui(player, entity as LinkTerminalEntity)
+    }
+
+    private fun openLinkEditGui(player: PlayerBase, entity: InventoryBase): ScreenBase {
+        return EditLinkGui(player, entity as DummyEditLinkEntity)
     }
 
     private fun openAlternateChestGui(player: PlayerBase, entity: InventoryBase): ScreenBase {
