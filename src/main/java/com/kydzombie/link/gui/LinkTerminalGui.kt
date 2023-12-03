@@ -110,13 +110,15 @@ class LinkTerminalGui(private val player: PlayerBase, private val entity: LinkTe
                 val connection = connections!![i]
                 val buttonX = CORNER_OFFSET.x + i % maxPerRow * (BUTTON_SIZE + BUTTON_MARGIN)
                 val buttonY = CORNER_OFFSET.y + i / maxPerRow * (BUTTON_SIZE + BUTTON_MARGIN)
-                drawTextWithShadowCentred(
-                    textManager,
-                    connection.name,
-                    buttonX + BUTTON_SIZE / 2,
-                    buttonY - 9,
-                    Int.MAX_VALUE
-                )
+                if (isHoveringButton(renderX + buttonX, renderY + buttonY)) {
+                    drawTextWithShadowCentred(
+                        textManager,
+                        connection.name,
+                        buttonX + BUTTON_SIZE / 2,
+                        buttonY - 9,
+                        Int.MAX_VALUE
+                    )
+                }
             }
         }
     }

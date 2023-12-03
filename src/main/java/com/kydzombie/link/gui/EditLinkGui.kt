@@ -31,10 +31,10 @@ class EditLinkGui(player: PlayerBase, dummyInventory: DummyEditLinkEntity) : Con
     override fun init() {
         containerHeight = 222
 
-        nameBox = Textbox(this, this.textManager, 0, 0, 32, 20, linkInfo.name).apply {
+        nameBox = Textbox(this, this.textManager, 0, 0, 64, 20, linkInfo.name).apply {
             println("Is text null? ${textManager == null}")
             selected = true
-            setMaxLength(32)
+            setMaxLength(16)
         }
     }
 
@@ -55,9 +55,10 @@ class EditLinkGui(player: PlayerBase, dummyInventory: DummyEditLinkEntity) : Con
     }
 
     override fun keyPressed(c: Char, i: Int) {
-        if (c != '' && nameBox.selected) {
+        if (c == '\r') {
+            nameBox.selected = false
+        } else if (c != '' && nameBox.selected) {
             nameBox.keyPressed(c, i)
-            linkInfo.name = nameBox.text
         } else {
             super.keyPressed(c, i)
         }
@@ -65,10 +66,11 @@ class EditLinkGui(player: PlayerBase, dummyInventory: DummyEditLinkEntity) : Con
 
     override fun mouseClicked(i: Int, j: Int, k: Int) {
         super.mouseClicked(i, j, k)
-        nameBox.mouseClicked(i, j, k)
+        nameBox.mouseClicked(i - renderX, j - renderY, k)
     }
 
     override fun onClose() {
+        linkInfo.name = nameBox.text
         PacketHelper.send(UpdateLinkInfoPacket(linkInfo))
         super.onClose()
     }
