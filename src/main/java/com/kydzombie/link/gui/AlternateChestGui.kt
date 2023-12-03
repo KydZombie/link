@@ -1,7 +1,6 @@
 package com.kydzombie.link.gui
 
 import com.kydzombie.link.LinkClient
-import com.kydzombie.link.block.HasLinkInfo
 import net.minecraft.client.gui.screen.container.ContainerBase
 import net.minecraft.entity.player.PlayerBase
 import net.minecraft.entity.player.PlayerInventory
@@ -23,7 +22,7 @@ class AlternateChestGui(player: PlayerBase, private val inventory: InventoryBase
     }
 
     override fun renderForeground() {
-        textManager.drawText((inventory as HasLinkInfo).linkName, 8, 6, 4210752)
+        textManager.drawText(LinkClient.currentEntityData!!.name, 8, 6, 4210752)
         textManager.drawText(playerInventory.containerName, 8, containerHeight - 96 + 2, 4210752)
     }
 

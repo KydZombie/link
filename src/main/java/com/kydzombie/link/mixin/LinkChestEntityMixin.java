@@ -94,18 +94,26 @@ public abstract class LinkChestEntityMixin extends TileEntityBase implements Has
 
     @Inject(method = "readIdentifyingData(Lnet/minecraft/util/io/CompoundTag;)V", at = @At("TAIL"))
     private void injectRead(CompoundTag tag, CallbackInfo ci) {
-        var colorTag = tag.getCompoundTag("link:color");
-        if (colorTag == null) return;
-        this.color = new Color(colorTag.getByte("r"), colorTag.getByte("g"), colorTag.getByte("b"));
+        if (tag.containsKey("link:color")) {
+            var colorTag = tag.getCompoundTag("link:color");
+            color = new Color(colorTag.getByte("r"), colorTag.getByte("g"), colorTag.getByte("b"));
+        }
+        if (tag.containsKey("link:name")) {
+            System.out.println("Reading name");
+            linkName = tag.getString("link:name");
+        }
     }
 
     @Inject(method = "writeIdentifyingData(Lnet/minecraft/util/io/CompoundTag;)V", at = @At("TAIL"))
     private void injectWrite(CompoundTag tag, CallbackInfo ci) {
-        var colorTag = new CompoundTag();
-        var color = getLinkColor();
-        colorTag.put("r", color.getRedByte());
-        colorTag.put("g", color.getGreenByte());
-        colorTag.put("b", color.getBlueByte());
-        tag.put("link:color", colorTag);
+        if (color != null) {
+            var colorTag = new CompoundTag();
+            colorTag.put("r", color.getRedByte());
+            colorTag.put("g", color.getGreenByte());
+            colorTag.put("b", color.getBlueByte());
+            tag.put("link:color", colorTag);
+        }
+
+        tag.put("link:name", linkName);
     }
 }
