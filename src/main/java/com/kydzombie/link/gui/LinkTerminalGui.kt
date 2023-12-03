@@ -25,6 +25,21 @@ class LinkTerminalGui(private val player: PlayerBase, private val entity: LinkTe
     private var deltaTime = 0f
     private var connections: Array<LinkConnectionInfo>? = null
 
+    private val renderX: Int
+        get() = (width - containerWidth) / 2
+
+    private val renderY: Int
+        get() = (height - containerHeight) / 2
+
+    private val linkCardsMenuOffset: Int
+        get() = Math.round(LINK_CARDS_MENU.width * (animationTimer / ANIMATION_TIME))
+
+    private val arrowX: Int
+        get() = (if (linkCardsMenuOpen) renderX + 131 + LINK_CARDS_MENU.width else renderX + 161) - linkCardsMenuOffset
+
+    private val arrowY: Int
+        get() = renderY + 53
+
     init {
         containerHeight = 222
     }
@@ -37,6 +52,19 @@ class LinkTerminalGui(private val player: PlayerBase, private val entity: LinkTe
         val now = System.currentTimeMillis()
         deltaTime = 1f / (now - lastFrameTime)
         lastFrameTime = now
+    }
+
+    private fun isHoveringArrow(): Boolean {
+        return mouseX > arrowX && mouseX < arrowX + OPEN_CARDS_ARROW.width && mouseY > arrowY && mouseY < arrowY + OPEN_CARDS_ARROW.height
+    }
+
+    private fun isHoveringButton(
+        buttonX: Int,
+        buttonY: Int,
+        xSize: Int = BUTTON_SIZE,
+        ySize: Int = BUTTON_SIZE
+    ): Boolean {
+        return mouseX > buttonX && mouseX < buttonX + xSize && mouseY > buttonY && mouseY < buttonY + ySize
     }
 
     override fun render(mouseX: Int, mouseY: Int, f: Float) {
@@ -57,9 +85,9 @@ class LinkTerminalGui(private val player: PlayerBase, private val entity: LinkTe
             }
         } else {
             if (animationTimer > 0) {
-                for (`object` in container.slots) {
-                    if (`object` is LinkCardSlot) {
-                        `object`.x = 10000
+                for (slot in container.slots) {
+                    if (slot is LinkCardSlot) {
+                        slot.x = 10000
                     }
                 }
                 animationTimer -= deltaTime
@@ -74,8 +102,6 @@ class LinkTerminalGui(private val player: PlayerBase, private val entity: LinkTe
     override fun renderForeground() {
         textManager.drawText(entity.containerName, 8, 6, 4210752)
         textManager.drawText(player.inventory.containerName, 8, containerHeight - 96 + 2, 4210752)
-        val renderX = (width - containerWidth) / 2
-        val renderY = (height - containerHeight) / 2
         val linkCardsMenuOffset = Math.round(LINK_CARDS_MENU.width * (animationTimer / ANIMATION_TIME))
 
         // Link Buttons
@@ -100,8 +126,6 @@ class LinkTerminalGui(private val player: PlayerBase, private val entity: LinkTe
         val textureId = minecraft.textureManager.getTextureId("/assets/link/gui/link_terminal_gui.png")
         GL11.glColor4f(1f, 1f, 1f, 1f)
         minecraft.textureManager.bindTexture(textureId)
-        val renderX = (width - containerWidth) / 2
-        val renderY = (height - containerHeight) / 2
 
         // Background
         blit(renderX, renderY, 0, 0, containerWidth, 223)
@@ -119,17 +143,12 @@ class LinkTerminalGui(private val player: PlayerBase, private val entity: LinkTe
 
 
         // Render link card open/close arrow
-        val arrowX =
-            (if (linkCardsMenuOpen) renderX + 131 + LINK_CARDS_MENU.width else renderX + 161) - linkCardsMenuOffset
-        val arrowY = renderY + 53
-        val hoveringArrow =
-            mouseX > arrowX && mouseX < arrowX + OPEN_CARDS_ARROW.width && mouseY > arrowY && mouseY < arrowY + OPEN_CARDS_ARROW.height
         if (linkCardsMenuOpen) {
             blit(
                 arrowX,
                 arrowY,
                 CLOSE_CARDS_ARROW.x,
-                if (hoveringArrow) CLOSE_CARDS_ARROW.y + SELECTED_ARROW_OFFSET else CLOSE_CARDS_ARROW.y,
+                if (isHoveringArrow()) CLOSE_CARDS_ARROW.y + SELECTED_ARROW_OFFSET else CLOSE_CARDS_ARROW.y,
                 CLOSE_CARDS_ARROW.width,
                 CLOSE_CARDS_ARROW.height
             )
@@ -138,7 +157,7 @@ class LinkTerminalGui(private val player: PlayerBase, private val entity: LinkTe
                 arrowX,
                 arrowY,
                 OPEN_CARDS_ARROW.x,
-                if (hoveringArrow) OPEN_CARDS_ARROW.y + SELECTED_ARROW_OFFSET else OPEN_CARDS_ARROW.y,
+                if (isHoveringArrow()) OPEN_CARDS_ARROW.y + SELECTED_ARROW_OFFSET else OPEN_CARDS_ARROW.y,
                 OPEN_CARDS_ARROW.width,
                 OPEN_CARDS_ARROW.height
             )
@@ -159,13 +178,7 @@ class LinkTerminalGui(private val player: PlayerBase, private val entity: LinkTe
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        val renderX = (width - containerWidth) / 2
-        val renderY = (height - containerHeight) / 2
-        val linkCardsMenuOffset = Math.round(LINK_CARDS_MENU.width * (animationTimer / ANIMATION_TIME))
-        val arrowX =
-            (if (linkCardsMenuOpen) renderX + 131 + LINK_CARDS_MENU.width else renderX + 161) - linkCardsMenuOffset
-        val arrowY = renderY + 53
-        if (mouseX > arrowX && mouseX < arrowX + OPEN_CARDS_ARROW.width && mouseY > arrowY && mouseY < arrowY + OPEN_CARDS_ARROW.height) {
+        if (isHoveringArrow()) {
             linkCardsMenuOpen = !linkCardsMenuOpen
         }
         if (connections != null) {
@@ -174,7 +187,7 @@ class LinkTerminalGui(private val player: PlayerBase, private val entity: LinkTe
                 val connection = connections!![i]
                 val buttonX = renderX + CORNER_OFFSET.x + i % maxPerRow * (BUTTON_SIZE + BUTTON_MARGIN)
                 val buttonY = renderY + CORNER_OFFSET.y + i / maxPerRow * (BUTTON_SIZE + BUTTON_MARGIN)
-                if (mouseX > buttonX && mouseX < buttonX + BUTTON_SIZE && mouseY > buttonY && mouseY < buttonY + BUTTON_SIZE) {
+                if (isHoveringButton(buttonX, buttonY)) {
                     if (mouseButton == 0) {
                         currentlySelectedColor = connection.color
                         PacketHelper.send(OpenLinkedStoragePacket(i, false))
