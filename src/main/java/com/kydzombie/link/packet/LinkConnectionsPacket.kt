@@ -9,7 +9,6 @@ import net.minecraft.network.PacketHandler
 import net.minecraft.packet.AbstractPacket
 import net.modificationstation.stationapi.api.network.packet.IdentifiablePacket
 import net.modificationstation.stationapi.api.util.Identifier
-import org.lwjgl.util.Color
 import java.io.DataInputStream
 import java.io.DataOutputStream
 
@@ -24,15 +23,6 @@ class LinkConnectionsPacket() : AbstractPacket(), IdentifiablePacket {
     override fun read(dataInputStream: DataInputStream) {
         connections = Array(dataInputStream.readInt()) {
             LinkConnectionInfo.createFrom(dataInputStream)
-            LinkConnectionInfo(
-                Identifier.of(readString(dataInputStream, 100)),
-                readString(dataInputStream, 100),
-                Color(
-                    dataInputStream.readByte(),
-                    dataInputStream.readByte(),
-                    dataInputStream.readByte()
-                )
-            )
         }
     }
 
