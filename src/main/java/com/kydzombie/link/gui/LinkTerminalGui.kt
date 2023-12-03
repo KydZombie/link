@@ -75,9 +75,9 @@ class LinkTerminalGui(private val player: PlayerBase, private val entity: LinkTe
             if (animationTimer < ANIMATION_TIME) {
                 animationTimer += deltaTime
                 if (animationTimer > ANIMATION_TIME) {
-                    for (`object` in container.slots) {
-                        if (`object` is LinkCardSlot) {
-                            `object`.x = LinkTerminalStorage.LINK_CARD_X
+                    for (slot in container.slots) {
+                        if (slot is LinkCardSlot) {
+                            slot.x = LinkTerminalStorage.LINK_CARD_X
                         }
                     }
                     animationTimer = ANIMATION_TIME
