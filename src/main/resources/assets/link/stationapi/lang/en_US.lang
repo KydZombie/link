@@ -1,4 +1,7 @@
 item.link_card.name=Link Card
+tooltip.tile_entity_text=%s: (%s)
+tooltip.invalid_link=Invalid Tile Entity!
+tooltip.link_pos=%d, %d, %d
 
 tile.link_terminal.name=Link Terminal
 tile.link_cable.name=Link Cable

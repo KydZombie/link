@@ -105,7 +105,5 @@ class DummyEditLinkEntity(val inventory: HasLinkInfo?) : TileEntityBase(), HasLi
 
     override fun setLinkColor(color: Color?) = Unit
 
-    override fun openLinkMenu(player: PlayerBase?) {
-        TODO("Not yet implemented")
-    }
+    override fun openLinkMenu(player: PlayerBase?) = Unit
 }
