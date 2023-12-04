@@ -19,13 +19,17 @@ open class LinkIcon(private val texturePos: Vector2i) {
         return texturePos
     }
 
-    open fun render(x: Int, y: Int, selected: Boolean, color: Color, helper: DrawableHelper) {
+    open fun render(x: Int, y: Int, selected: Boolean, color: Color, helper: DrawableHelper, scale: Float = 1f) {
         GL11.glColor3ub(color.redByte, color.greenByte, color.blueByte)
+        GL11.glTranslatef(x.toFloat(), y.toFloat(), 0F)
+        GL11.glScalef(scale, scale, 1f)
         val backgroundCoords = getLinkBackgroundCoordinates(selected)
-        helper.blit(x, y, backgroundCoords.x, backgroundCoords.y, buttonSize, buttonSize)
+        helper.blit(0, 0, backgroundCoords.x, backgroundCoords.y, buttonSize, buttonSize)
         GL11.glColor3f(1f, 1f, 1f)
         val iconCoords = getLinkIconCoordinates(selected)
-        helper.blit(x, y, iconCoords.x, iconCoords.y, buttonSize, buttonSize)
+        helper.blit(0, 0, iconCoords.x, iconCoords.y, buttonSize, buttonSize)
+        GL11.glScalef(1 / scale, 1 / scale, 1f)
+        GL11.glTranslatef(-x.toFloat(), -y.toFloat(), 0F)
     }
 
     companion object {
