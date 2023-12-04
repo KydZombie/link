@@ -22,6 +22,7 @@ class AlternateChestGui(player: PlayerBase, private val inventory: InventoryBase
     }
 
     override fun renderForeground() {
+        // TODO: Make the text visible with any color
         textManager.drawText(LinkClient.currentEntityData!!.name, 8, 6, 4210752)
         textManager.drawText(playerInventory.containerName, 8, containerHeight - 96 + 2, 4210752)
     }

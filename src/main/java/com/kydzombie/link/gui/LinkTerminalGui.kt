@@ -173,6 +173,7 @@ class LinkTerminalGui(private val player: PlayerBase, private val entity: LinkTe
                 val buttonY = renderY + CORNER_OFFSET.y + i / maxPerRow * (BUTTON_SIZE + BUTTON_MARGIN)
                 val selected =
                     mouseX > buttonX && mouseX < buttonX + BUTTON_SIZE && mouseY > buttonY && mouseY < buttonY + BUTTON_SIZE
+                // TODO: Make icons show that they are from link cards
                 connection.linkIcon.render(buttonX, buttonY, selected, connection.color, this)
             }
         }

@@ -36,8 +36,8 @@ class EditLinkGui(player: PlayerBase, dummyInventory: DummyEditLinkEntity) : Con
         containerHeight = 146
 
         nameBox =
-            Textbox(this, this.textManager, 16 + (22 * 2) + 16, 16 + 22 - 10, 64, 20, linkInfo.name).apply {
-                setMaxLength(16)
+            Textbox(this, this.textManager, 16 + (22 * 2) + 8, 16 + 22 - 10, 96, 20, linkInfo.name).apply {
+                setMaxLength(14)
             }
 
         val buttonY = renderY + 80
