@@ -5,3 +5,5 @@ tile.link_cable.name=Link Cable
 tile.link_connector.name=Link Connector
 
 tab.all.name=Link
+
+gui.edit_link=Edit Link

@@ -6,6 +6,7 @@ import com.kydzombie.link.packet.UpdateLinkInfoPacket
 import com.kydzombie.link.util.LinkConnectionInfo
 import net.minecraft.client.gui.screen.container.ContainerBase
 import net.minecraft.client.gui.widgets.Textbox
+import net.minecraft.client.resource.language.I18n
 import net.minecraft.entity.player.PlayerBase
 import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.item.ItemInstance
@@ -31,7 +32,7 @@ class EditLinkGui(player: PlayerBase, dummyInventory: DummyEditLinkEntity) : Con
     override fun init() {
         containerHeight = 222
 
-        nameBox = Textbox(this, this.textManager, 0, 0, 64, 20, linkInfo.name).apply {
+        nameBox = Textbox(this, this.textManager, 6, 48, 64, 20, linkInfo.name).apply {
             selected = true
             setMaxLength(16)
         }
@@ -47,7 +48,9 @@ class EditLinkGui(player: PlayerBase, dummyInventory: DummyEditLinkEntity) : Con
     }
 
     override fun renderForeground() {
-        textManager.drawText(linkInfo.name, 8, 6, 4210752)
+        I18n.translate("gui.link:edit_link").let { text ->
+            textManager.drawText(text, (containerWidth / 2) - (textManager.getTextWidth(text) / 2), 6, 4210752)
+        }
         textManager.drawText(linkInfo.color.toString(), 8, 24, 4210752)
 
         nameBox.draw()

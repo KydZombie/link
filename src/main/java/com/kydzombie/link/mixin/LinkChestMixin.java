@@ -1,6 +1,6 @@
 package com.kydzombie.link.mixin;
 
-import com.kydzombie.link.block.LinkConnector;
+import com.kydzombie.link.block.LinkCable;
 import com.kydzombie.link.item.LinkCard;
 import net.minecraft.block.Chest;
 import net.minecraft.entity.player.PlayerBase;
@@ -22,7 +22,7 @@ public class LinkChestMixin {
                 cir.setReturnValue(false);
                 cir.cancel();
             } else if (item.getType() instanceof Block block) {
-                if (block.getBlock() instanceof LinkConnector) {
+                if (block.getBlock() instanceof LinkCable) {
                     cir.setReturnValue(false);
                     cir.cancel();
                 }
