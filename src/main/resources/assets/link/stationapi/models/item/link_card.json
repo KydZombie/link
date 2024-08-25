@@ -1,0 +1,20 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "link:item/link_card"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "link:linked": 0.5
+      },
+      "model": "link:item/link_card_invalid"
+    },
+    {
+      "predicate": {
+        "link:linked": 1
+      },
+      "model": "link:item/link_card_linked"
+    }
+  ]
+}
