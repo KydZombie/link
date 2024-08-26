@@ -10,7 +10,7 @@ targetCompatibility = JavaVersion.VERSION_17
 archivesBaseName = project.archives_base_name
 version = project.mod_version
 group = project.maven_group
-  
+
 loom {
     mixin {
         useLegacyMixinAp = true
@@ -51,6 +51,10 @@ repositories {
         name = 'Jitpack'
         url = 'https://jitpack.io'
     }
+    maven {
+        name = "nyarepo"
+        url = "https://maven.fildand.cz/releases"
+    }
     // Used for another StationAPI dependency
     exclusiveContent {
         forRepository {
@@ -86,6 +90,10 @@ dependencies {
         transitive false
     }
     modImplementation("net.glasslauncher:HowManyItems-Fabric-Unofficial:${project.howmanyitems_version}") {
+        transitive false
+    }
+
+    modImplementation("net.danygames2014:NyaLib:${project.nyalib_version}") {
         transitive false
     }
 }

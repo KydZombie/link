@@ -53,6 +53,7 @@ public class LinkTerminalScreen extends HandledScreen {
                 }
             }
         }
+        tempConnections.addAll(List.of(blockEntity.connections));
         connections = tempConnections.toArray(LinkConnectionInfo[]::new);
     }
 

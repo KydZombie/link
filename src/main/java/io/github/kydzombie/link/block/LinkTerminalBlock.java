@@ -3,6 +3,9 @@ package io.github.kydzombie.link.block;
 import io.github.kydzombie.link.Link;
 import io.github.kydzombie.link.block.entity.LinkTerminalBlockEntity;
 import io.github.kydzombie.link.gui.screen.LinkTerminalScreenHandler;
+import net.danygames2014.nyalib.network.NetworkComponent;
+import net.danygames2014.nyalib.network.NetworkManager;
+import net.danygames2014.nyalib.network.NetworkType;
 import net.minecraft.block.Block;
 import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntity;
@@ -17,12 +20,24 @@ import net.modificationstation.stationapi.api.template.block.TemplateBlockWithEn
 import net.modificationstation.stationapi.api.util.Identifier;
 import net.modificationstation.stationapi.api.util.math.Direction;
 
-public class LinkTerminalBlock extends TemplateBlockWithEntity {
+public class LinkTerminalBlock extends TemplateBlockWithEntity implements NetworkComponent {
     public LinkTerminalBlock(Identifier identifier) {
         super(identifier, Material.METAL);
         setHardness(2.5f);
         setTranslationKey(identifier);
         setDefaultState(getStateManager().getDefaultState().with(Properties.FACING, Direction.NORTH));
+    }
+
+    @Override
+    public void onPlaced(World world, int x, int y, int z) {
+        super.onPlaced(world, x, y, z);
+        NetworkManager.addBlock(x, y, z, world, this, this);
+    }
+
+    @Override
+    public void onBreak(World world, int x, int y, int z) {
+        super.onBreak(world, x, y, z);
+        NetworkManager.removeBlock(x, y, z, world, this, this);
     }
 
     @Override
@@ -51,5 +66,10 @@ public class LinkTerminalBlock extends TemplateBlockWithEntity {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public NetworkType getNetworkType() {
+        return Link.linkNetwork;
     }
 }

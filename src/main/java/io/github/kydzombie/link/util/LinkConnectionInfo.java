@@ -1,18 +1,22 @@
 package io.github.kydzombie.link.util;
 
+import io.github.kydzombie.link.Link;
+import io.github.kydzombie.link.block.entity.HasLinkConnectionInfo;
 import io.github.kydzombie.link.item.LinkCardItem;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.nbt.NbtCompound;
+import net.modificationstation.stationapi.api.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Random;
-
-public record LinkConnectionInfo(String name, int color, LinkCardItem.LinkStatus status, int x, int y, int z) {
-    private static final Random RANDOM = new Random();
-
+public record LinkConnectionInfo(String name, Identifier icon, int color, LinkCardItem.LinkStatus status, int x, int y,
+                                 int z) {
     public static <T extends BlockEntity & Inventory> LinkConnectionInfo fromBlockEntity(T blockEntity) {
-        return new LinkConnectionInfo(blockEntity.getName(), RANDOM.nextInt(0xFFFFFF), LinkCardItem.LinkStatus.VALID, blockEntity.x, blockEntity.y, blockEntity.z);
+        if (blockEntity instanceof HasLinkConnectionInfo connectionInfo) {
+            return new LinkConnectionInfo(connectionInfo.getLinkName(), connectionInfo.getLinkIcon(), connectionInfo.getLinkColor(), LinkCardItem.LinkStatus.VALID, blockEntity.x, blockEntity.y, blockEntity.z);
+        } else {
+            return new LinkConnectionInfo(blockEntity.getName() + " (!)", Link.NAMESPACE.id("unknown"), 0xFFFFFF, LinkCardItem.LinkStatus.VALID, blockEntity.x, blockEntity.y, blockEntity.z);
+        }
     }
 
     public static @Nullable LinkConnectionInfo fromNbt(NbtCompound connectionInfoNbt) {
@@ -23,6 +27,7 @@ public record LinkConnectionInfo(String name, int color, LinkCardItem.LinkStatus
         NbtCompound pos = connectionInfoNbt.getCompound("pos");
         return new LinkConnectionInfo(
                 connectionInfoNbt.getString("name"),
+                Identifier.of(connectionInfoNbt.getString("icon")),
                 connectionInfoNbt.getInt("color"),
                 status,
                 pos.getInt("x"), pos.getInt("y"), pos.getInt("z")
@@ -39,6 +44,7 @@ public record LinkConnectionInfo(String name, int color, LinkCardItem.LinkStatus
         connectionInfoNbt.putInt("status", status.ordinal());
         connectionInfoNbt.putInt("color", color);
         connectionInfoNbt.putString("name", name);
+        connectionInfoNbt.putString("icon", icon.toString());
         return connectionInfoNbt;
     }
 }

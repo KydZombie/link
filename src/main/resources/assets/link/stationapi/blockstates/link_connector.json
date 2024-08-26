@@ -1,0 +1,169 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "link:block/link_cable_core"
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "east": "cable"
+          },
+          {
+            "east": "inventory"
+          }
+        ]
+      },
+      "apply": {
+        "model": "link:block/link_cable_part",
+        "uvlock": false
+      }
+    },
+    {
+      "when": {
+        "east": "inventory"
+      },
+      "apply": {
+        "model": "link:block/link_connector",
+        "uvlock": false
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "south": "cable"
+          },
+          {
+            "south": "inventory"
+          }
+        ]
+      },
+      "apply": {
+        "model": "link:block/link_cable_part",
+        "y": 90,
+        "uvlock": false
+      }
+    },
+    {
+      "when": {
+        "south": "inventory"
+      },
+      "apply": {
+        "model": "link:block/link_connector",
+        "y": 90,
+        "uvlock": false
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "west": "cable"
+          },
+          {
+            "west": "inventory"
+          }
+        ]
+      },
+      "apply": {
+        "model": "link:block/link_cable_part",
+        "y": 180,
+        "uvlock": false
+      }
+    },
+    {
+      "when": {
+        "west": "inventory"
+      },
+      "apply": {
+        "model": "link:block/link_connector",
+        "y": 180,
+        "uvlock": false
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "north": "cable"
+          },
+          {
+            "north": "inventory"
+          }
+        ]
+      },
+      "apply": {
+        "model": "link:block/link_cable_part",
+        "y": 270,
+        "uvlock": false
+      }
+    },
+    {
+      "when": {
+        "north": "inventory"
+      },
+      "apply": {
+        "model": "link:block/link_connector",
+        "y": 270,
+        "uvlock": false
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "up": "cable"
+          },
+          {
+            "up": "inventory"
+          }
+        ]
+      },
+      "apply": {
+        "model": "link:block/link_cable_part",
+        "x": 270,
+        "uvlock": false
+      }
+    },
+    {
+      "when": {
+        "up": "inventory"
+      },
+      "apply": {
+        "model": "link:block/link_connector",
+        "x": 270,
+        "uvlock": false
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "down": "cable"
+          },
+          {
+            "down": "inventory"
+          }
+        ]
+      },
+      "apply": {
+        "model": "link:block/link_cable_part",
+        "x": 90,
+        "uvlock": false
+      }
+    },
+    {
+      "when": {
+        "down": "inventory"
+      },
+      "apply": {
+        "model": "link:block/link_connector",
+        "x": 90,
+        "uvlock": false
+      }
+    }
+  ]
+}

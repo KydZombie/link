@@ -79,7 +79,6 @@ public interface SimpleInventory extends Inventory {
                 setStack(slot, new ItemStack(stackNbt));
             }
         }
-
     }
 
     default void writeStorageNbt(NbtCompound nbt) {

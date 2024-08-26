@@ -4,7 +4,7 @@
   "package": "io.github.kydzombie.link.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "LinkCardChestMixin"
+    "ChestBlockMixin"
   ],
   "server": [
   ],
