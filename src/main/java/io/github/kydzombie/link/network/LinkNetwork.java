@@ -27,14 +27,27 @@ public class LinkNetwork extends Network {
             if (block instanceof LinkTerminalBlock) {
                 System.out.println("Found a terminal");
                 terminals.add((LinkTerminalBlockEntity) world.getBlockEntity(pos.x, pos.y, pos.z));
+                machines.add(new BlockPos(pos.x, pos.y, pos.z));
             } else if (!(block instanceof LinkCableBlock)) {
                 System.out.println("Found a machine");
                 machines.add(new BlockPos(pos.x, pos.y, pos.z));
             }
         });
         for (LinkTerminalBlockEntity terminal : terminals) {
+            System.out.println("Sending update");
             terminal.updateMachineConnections(machines);
         }
+    }
+
+    public HashSet<BlockPos> getMachines() {
+        HashSet<BlockPos> machines = new HashSet<>();
+        blocks.forEach((pos, block) -> {
+            if (!(block instanceof LinkCableBlock)) {
+                System.out.println("Found a machine");
+                machines.add(new BlockPos(pos.x, pos.y, pos.z));
+            }
+        });
+        return machines;
     }
 
     @Override

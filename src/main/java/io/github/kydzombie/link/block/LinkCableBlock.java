@@ -2,7 +2,6 @@ package io.github.kydzombie.link.block;
 
 import io.github.kydzombie.link.Link;
 import net.danygames2014.nyalib.network.NetworkComponent;
-import net.danygames2014.nyalib.network.NetworkManager;
 import net.danygames2014.nyalib.network.NetworkType;
 import net.minecraft.block.Block;
 import net.minecraft.block.Material;
@@ -98,18 +97,14 @@ public class LinkCableBlock extends TemplateBlock implements NetworkComponent {
     }
 
     @Override
-    public void onPlaced(World world, int x, int y, int z) {
-        super.onPlaced(world, x, y, z);
-        if (!IS_BEING_REPLACED) {
-            NetworkManager.addBlock(x, y, z, world, this, this);
-        }
+    public <T extends Block & NetworkComponent> void addToNet(World world, int x, int y, int z, T component) {
+        if (IS_BEING_REPLACED) return;
+        NetworkComponent.super.addToNet(world, x, y, z, component);
     }
 
     @Override
-    public void onBreak(World world, int x, int y, int z) {
-        super.onBreak(world, x, y, z);
-        if (!IS_BEING_REPLACED) {
-            NetworkManager.removeBlock(x, y, z, world, this, this);
-        }
+    public <T extends Block & NetworkComponent> void removeFromNet(World world, int x, int y, int z, T component) {
+        if (IS_BEING_REPLACED) return;
+        NetworkComponent.super.removeFromNet(world, x, y, z, component);
     }
 }

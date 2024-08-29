@@ -3,19 +3,18 @@ package io.github.kydzombie.link.gui.screen.ingame;
 import io.github.kydzombie.link.block.entity.LinkTerminalBlockEntity;
 import io.github.kydzombie.link.gui.screen.LinkTerminalScreenHandler;
 import io.github.kydzombie.link.gui.screen.slot.LinkCardSlot;
-import io.github.kydzombie.link.item.LinkCardItem;
+import io.github.kydzombie.link.packet.RequestLinkConnectionsPacket;
 import io.github.kydzombie.link.util.LinkConnectionInfo;
 import io.github.kydzombie.link.util.Rectangle;
 import io.github.kydzombie.link.util.Timer;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
+import net.modificationstation.stationapi.api.network.packet.PacketHelper;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
 
 public class LinkTerminalScreen extends HandledScreen {
@@ -23,6 +22,7 @@ public class LinkTerminalScreen extends HandledScreen {
     private final LinkTerminalBlockEntity blockEntity;
 
     private LinkConnectionInfo[] connections;
+    boolean awaitingUpdate = false;
 
     int mouseX = 0;
     int mouseY = 0;
@@ -42,19 +42,31 @@ public class LinkTerminalScreen extends HandledScreen {
         this.player = player;
         this.blockEntity = blockEntity;
         backgroundHeight = 223;
+//        ArrayList<LinkConnectionInfo> tempConnections = new ArrayList<>();
+//        for (ItemStack stack : blockEntity.getStacks()) {
+//            if (stack == null) continue;
+//            if (stack.getItem() instanceof LinkCardItem) {
+//                LinkConnectionInfo connectionInfo = LinkCardItem.getConnectionInfo(stack);
+//                if (connectionInfo != null && connectionInfo.status() == LinkCardItem.LinkStatus.VALID) {
+//                    tempConnections.add(connectionInfo);
+//                }
+//            }
+//        }
+//        tempConnections.addAll(List.of(blockEntity.connections));
+//        connections = tempConnections.toArray(LinkConnectionInfo[]::new);
+    }
 
-        ArrayList<LinkConnectionInfo> tempConnections = new ArrayList<>();
-        for (ItemStack stack : blockEntity.getStacks()) {
-            if (stack == null) continue;
-            if (stack.getItem() instanceof LinkCardItem) {
-                LinkConnectionInfo connectionInfo = LinkCardItem.getConnectionInfo(stack);
-                if (connectionInfo != null && connectionInfo.status() == LinkCardItem.LinkStatus.VALID) {
-                    tempConnections.add(connectionInfo);
-                }
-            }
+    public void requestConnections() {
+        PacketHelper.send(new RequestLinkConnectionsPacket());
+    }
+
+    public void setConnections(LinkConnectionInfo[] connections) {
+        this.connections = connections;
+        awaitingUpdate = false;
+        System.out.println("Screen: This is what I got:");
+        for (LinkConnectionInfo connection : connections) {
+            System.out.println("connection = " + connection);
         }
-        tempConnections.addAll(List.of(blockEntity.connections));
-        connections = tempConnections.toArray(LinkConnectionInfo[]::new);
     }
 
     @Override
@@ -262,6 +274,10 @@ public class LinkTerminalScreen extends HandledScreen {
         this.mouseY = mouseY;
 
         updateLinkCardSlots();
+
+        if (connections == null && !awaitingUpdate) {
+            requestConnections();
+        }
 
         super.render(mouseX, mouseY, delta);
     }

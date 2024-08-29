@@ -31,13 +31,13 @@ public class LinkTerminalBlock extends TemplateBlockWithEntity implements Networ
     @Override
     public void onPlaced(World world, int x, int y, int z) {
         super.onPlaced(world, x, y, z);
-        NetworkManager.addBlock(x, y, z, world, this, this);
+        NetworkManager.addBlock(world, x, y, z, this);
     }
 
     @Override
     public void onBreak(World world, int x, int y, int z) {
         super.onBreak(world, x, y, z);
-        NetworkManager.removeBlock(x, y, z, world, this, this);
+        NetworkManager.removeBlock(world, x, y, z, this);
     }
 
     @Override

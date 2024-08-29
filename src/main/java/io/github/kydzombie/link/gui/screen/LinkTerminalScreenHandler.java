@@ -8,7 +8,7 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 
 public class LinkTerminalScreenHandler extends ScreenHandler {
-    LinkTerminalBlockEntity blockEntity;
+    public LinkTerminalBlockEntity blockEntity;
 
     public LinkTerminalScreenHandler(PlayerEntity player, LinkTerminalBlockEntity blockEntity) {
         this.blockEntity = blockEntity;
